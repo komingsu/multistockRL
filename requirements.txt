@@ -1,0 +1,49 @@
+# ============================
+# requirements.txt (Python 3.11)
+# Multistock RL — CPU/GPU ready
+# ============================
+
+# --- Core scientific stack ---
+numpy
+pandas
+scipy
+scikit-learn
+pyyaml
+pyarrow
+tqdm
+arrow
+requests
+
+# --- Data sources (KR/US) ---
+yfinance
+finance-datareader
+opendartreader
+beautifulsoup4
+
+# --- Technical indicators / features ---
+ta
+
+# --- RL environment & algorithms ---
+gymnasium
+stable-baselines3
+
+# --- PyTorch & friends (choose CPU or CUDA wheel at install time) ---
+# Default CPU wheels (works everywhere); if you want GPU, see CUDA note below.
+torch==2.4.1
+torchvision==0.19.1
+torchaudio==2.4.1
+
+# TorchRL stack (match Torch 2.4.x)
+torchrl==0.5.0
+tensordict==0.5.0
+
+# --- Logging / visualization ---
+matplotlib
+seaborn
+tensorboard
+
+# --- Jupyter ---
+jupyter
+ipykernel
+# --- Testing ---
+pytest

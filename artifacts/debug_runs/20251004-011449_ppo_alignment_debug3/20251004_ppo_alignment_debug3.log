@@ -1,0 +1,33 @@
+[2025-10-04 01:14:49] alias=ppo_alignment_debug3
+[2025-10-04 01:14:49] Config snapshot written to config.yaml
+[2025-10-04 01:14:49] Initialising training for ppo_alignment_debug3: epochs≈2, episode_steps=600
+[2025-10-04 01:14:58] Episode completed with train_reward=-41581551.6930 at step 600
+[2025-10-04 01:14:58] Epoch 1 recorded at 600 steps (train/clip_fraction=0.7633, train/clip_range=0.2000, train/entropy_loss=-142.9340, train/explained_variance=-1.7601, train/learning_rate=0.0003, train/loss=-0.1605, train/n_updates=40.0000, train/policy_gradient_loss=-0.1468, train/value_loss=0.0209)
+[2025-10-04 01:14:59] Validation @ epoch 1: reward=285526651.5470, std=0.0000
+[2025-10-04 01:14:59] New best model saved at best_model_600.zip (mean reward 285526651.5470)
+[2025-10-04 01:15:09] Episode completed with train_reward=13724884.2490 at step 1200
+[2025-10-04 01:15:09] Epoch 2 recorded at 1200 steps (train/clip_fraction=0.7430, train/clip_range=0.2000, train/entropy_loss=-142.7539, train/explained_variance=-2.5857, train/learning_rate=0.0003, train/loss=-0.1575, train/n_updates=90.0000, train/policy_gradient_loss=-0.1359, train/value_loss=0.0104)
+[2025-10-04 01:15:10] Validation @ epoch 2: reward=27057939.1113, std=0.0000
+[2025-10-04 01:15:11] Final epoch 3 metrics captured at 1280 steps (train/clip_fraction=0.0141, train/clip_range=0.2000, train/entropy_loss=-142.8428, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=6788375117824.0000, train/n_updates=100.0000, train/policy_gradient_loss=-0.0017, train/value_loss=12710782749900.8008)
+[2025-10-04 01:15:12] Final validation reward=24914768.5583, std=0.0000
+[2025-10-04 01:15:12] Performance summary:
+[2025-10-04 01:15:12] alias=ppo_alignment_debug3
+[2025-10-04 01:15:12] start_timesteps=0
+[2025-10-04 01:15:12] epoch_length=600
+[2025-10-04 01:15:12] episode_steps=600
+[2025-10-04 01:15:12] planned_epochs=2
+[2025-10-04 01:15:12] log_interval_epochs=1
+[2025-10-04 01:15:12] eval_interval_epochs=1
+[2025-10-04 01:15:12] checkpoint_interval_epochs=1
+[2025-10-04 01:15:12] last_train_reward=13724884.249019623
+[2025-10-04 01:15:12] last_checkpoint=1200
+[2025-10-04 01:15:12] last_valid_reward=27057939.111256
+[2025-10-04 01:15:12] run_completed=True
+[2025-10-04 01:15:12] train_timesteps=1200
+[2025-10-04 01:15:12] train_epochs=2
+[2025-10-04 01:15:12] train_reward=13724884.249019623
+[2025-10-04 01:15:12] valid_reward=24914768.558277
+[2025-10-04 01:15:12] eval_std_reward=0.0
+[2025-10-04 01:15:12] final_checkpoint=artifacts\debug_runs\20251004-011449_ppo_alignment_debug3\checkpoints\step_001200\model.pt
+[2025-10-04 01:15:12] date=2025-10-04
+[2025-10-04 01:15:12] Training complete

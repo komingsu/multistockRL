@@ -1,0 +1,53 @@
+[2025-10-06 09:59:30] alias=debug_two_epoch
+[2025-10-06 09:59:30] Config snapshot written to config.yaml
+[2025-10-06 09:59:32] Initialising training for debug_two_epoch: algorithm=PPO, total_timesteps=1800, project_epoch_unit=steps, project_epoch_value=2048.0, planned_project_epochs=1
+[2025-10-06 09:59:32] Algorithm metadata -> algorithm=PPO, n_steps=2048
+[2025-10-06 09:59:44] Episode completed with train_reward=700890029.2439 at step 959
+[2025-10-06 09:59:57] Episode completed with train_reward=1884479139.7131 at step 1918
+[2025-10-06 09:59:58] Project epoch 1 recorded at step 2048 (train_reward=1884479139.7131, total_env_steps=2048.0000, episodes_completed=2.0000)
+[2025-10-06 09:59:58] Checkpoint saved at project epoch 1 (step 2048)
+[2025-10-06 09:59:59] Validation @ project epoch 1: reward=1295064586.8535, std=0.0000
+[2025-10-06 09:59:59] Saved evaluation valuation plot -> project_epoch_0001_episode_01_valuation.png
+[2025-10-06 09:59:59] New best model saved at best_model_epoch_1.zip (reward 1295064586.8535)
+[2025-10-06 09:59:59] Evaluation checkpoint saved -> checkpoints\step_002048\model.pt
+[2025-10-06 10:00:04] Final validation reward=1294719177.9080, std=0.0000
+[2025-10-06 10:00:04] Actual training steps 2048 exceeded planned 1800 by 248 to honor rollout multiple of 2048.
+[2025-10-06 10:00:04] Performance summary:
+[2025-10-06 10:00:04] alias=debug_two_epoch
+[2025-10-06 10:00:04] start_timesteps=0
+[2025-10-06 10:00:04] episode_steps=900
+[2025-10-06 10:00:04] planned_epochs=2
+[2025-10-06 10:00:04] project_epoch_unit=steps
+[2025-10-06 10:00:04] project_epoch_value=2048.0
+[2025-10-06 10:00:04] planned_project_epochs=1
+[2025-10-06 10:00:04] planned_timesteps=1800
+[2025-10-06 10:00:04] log_interval_project_epochs=1
+[2025-10-06 10:00:04] eval_interval_project_epochs=1
+[2025-10-06 10:00:04] checkpoint_interval_project_epochs=1
+[2025-10-06 10:00:04] project_epochs_completed=1
+[2025-10-06 10:00:04] total_env_steps=2048
+[2025-10-06 10:00:04] episodes_completed=2
+[2025-10-06 10:00:04] updates_applied=10
+[2025-10-06 10:00:04] wall_time=31.514790099929087
+[2025-10-06 10:00:04] algorithm=PPO
+[2025-10-06 10:00:04] n_steps=2048
+[2025-10-06 10:00:04] policy=MlpPolicy
+[2025-10-06 10:00:04] last_train_reward=1884479139.7131386
+[2025-10-06 10:00:04] nav=10156585909.930557
+[2025-10-06 10:00:04] turnover=0.00943566117861805
+[2025-10-06 10:00:04] drawdown=0.004423589018882178
+[2025-10-06 10:00:04] last_checkpoint_project_epoch=1
+[2025-10-06 10:00:04] last_checkpoint=2048
+[2025-10-06 10:00:04] last_valid_reward=1294719177.9079533
+[2025-10-06 10:00:04] last_eval_epoch=1
+[2025-10-06 10:00:04] run_completed=True
+[2025-10-06 10:00:04] train_timesteps=2048
+[2025-10-06 10:00:04] train_epochs=3
+[2025-10-06 10:00:04] train_timesteps_overrun=248
+[2025-10-06 10:00:04] train_epochs_overrun=1
+[2025-10-06 10:00:04] train_reward=1884479139.7131386
+[2025-10-06 10:00:04] valid_reward=1294719177.9079533
+[2025-10-06 10:00:04] eval_std_reward=0.0
+[2025-10-06 10:00:04] final_checkpoint=artifacts\runs\20251006-095930_debug_two_epoch\checkpoints\step_002048\model.pt
+[2025-10-06 10:00:04] date=2025-10-06
+[2025-10-06 10:00:04] Training complete

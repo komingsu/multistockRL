@@ -1,0 +1,200 @@
+[2025-10-05 21:46:03] alias=trial_v3_02_ppo
+[2025-10-05 21:46:03] Config snapshot written to config.yaml
+[2025-10-05 21:46:04] Initialising training for trial_v3_02_ppo: algorithm=PPO, total_timesteps=108000, project_epoch_unit=steps, project_epoch_value=4096.0, planned_project_epochs=27
+[2025-10-05 21:46:04] Algorithm metadata -> algorithm=PPO, n_steps=4096
+[2025-10-05 21:46:18] Episode completed with train_reward=209591596.8633 at step 959
+[2025-10-05 21:46:32] Episode completed with train_reward=143943710.7863 at step 1918
+[2025-10-05 21:46:45] Episode completed with train_reward=312748595.1518 at step 2877
+[2025-10-05 21:46:59] Episode completed with train_reward=135470773.9042 at step 3836
+[2025-10-05 21:47:02] Project epoch 1 recorded at step 4096 (train_reward=135470773.9042, total_env_steps=4096.0000, episodes_completed=4.0000)
+[2025-10-05 21:47:13] Episode completed with train_reward=82406844.9205 at step 4795
+[2025-10-05 21:47:23] Episode completed with train_reward=118220804.9605 at step 5754
+[2025-10-05 21:47:32] Episode completed with train_reward=70781131.4434 at step 6713
+[2025-10-05 21:47:42] Episode completed with train_reward=35397510.4737 at step 7672
+[2025-10-05 21:47:47] Project epoch 2 recorded at step 8192 (train_reward=35397510.4737, total_env_steps=8192.0000, episodes_completed=8.0000)
+[2025-10-05 21:47:56] Episode completed with train_reward=113409220.7461 at step 8631
+[2025-10-05 21:48:06] Episode completed with train_reward=232958388.4164 at step 9590
+[2025-10-05 21:48:15] Episode completed with train_reward=87245472.9248 at step 10549
+[2025-10-05 21:48:25] Episode completed with train_reward=59590389.9664 at step 11508
+[2025-10-05 21:48:33] Project epoch 3 recorded at step 12288 (train_reward=59590389.9664, total_env_steps=12288.0000, episodes_completed=12.0000)
+[2025-10-05 21:48:39] Episode completed with train_reward=53012527.2884 at step 12467
+[2025-10-05 21:48:49] Episode completed with train_reward=37089928.3501 at step 13426
+[2025-10-05 21:48:59] Episode completed with train_reward=69926195.2278 at step 14385
+[2025-10-05 21:49:08] Episode completed with train_reward=194638094.3958 at step 15344
+[2025-10-05 21:49:17] Episode completed with train_reward=110407441.5604 at step 16303
+[2025-10-05 21:49:18] Project epoch 4 recorded at step 16384 (train_reward=110407441.5604, total_env_steps=16384.0000, episodes_completed=17.0000)
+[2025-10-05 21:49:31] Episode completed with train_reward=146233835.6937 at step 17262
+[2025-10-05 21:49:41] Episode completed with train_reward=83684305.1158 at step 18221
+[2025-10-05 21:49:51] Episode completed with train_reward=191302477.8534 at step 19180
+[2025-10-05 21:50:01] Episode completed with train_reward=180475033.6722 at step 20139
+[2025-10-05 21:50:04] Project epoch 5 recorded at step 20480 (train_reward=180475033.6722, total_env_steps=20480.0000, episodes_completed=21.0000)
+[2025-10-05 21:50:04] Checkpoint saved at project epoch 5 (step 20480)
+[2025-10-05 21:50:05] Validation @ project epoch 5: reward=61436477.9593, std=0.0000
+[2025-10-05 21:50:05] New best model saved at best_model_epoch_5.zip (reward 61436477.9593)
+[2025-10-05 21:50:15] Episode completed with train_reward=146508790.8339 at step 21098
+[2025-10-05 21:50:25] Episode completed with train_reward=70776221.0128 at step 22057
+[2025-10-05 21:50:35] Episode completed with train_reward=76577437.4758 at step 23016
+[2025-10-05 21:50:45] Episode completed with train_reward=109418575.5176 at step 23975
+[2025-10-05 21:50:51] Project epoch 6 recorded at step 24576 (train_reward=109418575.5176, valid_reward=61436477.9593, total_env_steps=24576.0000, episodes_completed=25.0000)
+[2025-10-05 21:51:00] Episode completed with train_reward=10660360.7559 at step 24934
+[2025-10-05 21:51:15] Episode completed with train_reward=128813928.4656 at step 25893
+[2025-10-05 21:51:28] Episode completed with train_reward=86399612.3671 at step 26852
+[2025-10-05 21:51:38] Episode completed with train_reward=64933219.3801 at step 27811
+[2025-10-05 21:51:47] Project epoch 7 recorded at step 28672 (train_reward=64933219.3801, valid_reward=61436477.9593, total_env_steps=28672.0000, episodes_completed=29.0000)
+[2025-10-05 21:51:52] Episode completed with train_reward=93004918.3938 at step 28770
+[2025-10-05 21:52:07] Episode completed with train_reward=56581285.5681 at step 29729
+[2025-10-05 21:52:21] Episode completed with train_reward=118237589.2158 at step 30688
+[2025-10-05 21:52:36] Episode completed with train_reward=153525383.7305 at step 31647
+[2025-10-05 21:52:50] Episode completed with train_reward=84611530.3236 at step 32606
+[2025-10-05 21:52:52] Project epoch 8 recorded at step 32768 (train_reward=84611530.3236, valid_reward=61436477.9593, total_env_steps=32768.0000, episodes_completed=34.0000)
+[2025-10-05 21:53:07] Episode completed with train_reward=32228902.2535 at step 33565
+[2025-10-05 21:53:21] Episode completed with train_reward=162691068.9612 at step 34524
+[2025-10-05 21:53:35] Episode completed with train_reward=220433668.8179 at step 35483
+[2025-10-05 21:53:49] Episode completed with train_reward=106641883.2148 at step 36442
+[2025-10-05 21:53:54] Project epoch 9 recorded at step 36864 (train_reward=106641883.2148, valid_reward=61436477.9593, total_env_steps=36864.0000, episodes_completed=38.0000)
+[2025-10-05 21:54:05] Episode completed with train_reward=148801800.9785 at step 37401
+[2025-10-05 21:54:19] Episode completed with train_reward=191070047.1323 at step 38360
+[2025-10-05 21:54:29] Episode completed with train_reward=82963925.8367 at step 39319
+[2025-10-05 21:54:39] Episode completed with train_reward=20987791.1339 at step 40278
+[2025-10-05 21:54:46] Project epoch 10 recorded at step 40960 (train_reward=20987791.1339, valid_reward=61436477.9593, total_env_steps=40960.0000, episodes_completed=42.0000)
+[2025-10-05 21:54:46] Checkpoint saved at project epoch 10 (step 40960)
+[2025-10-05 21:54:47] Validation @ project epoch 10: reward=61436477.9593, std=0.0000
+[2025-10-05 21:54:55] Episode completed with train_reward=165779168.2297 at step 41237
+[2025-10-05 21:55:10] Episode completed with train_reward=63883716.5905 at step 42196
+[2025-10-05 21:55:25] Episode completed with train_reward=127004559.0609 at step 43155
+[2025-10-05 21:55:39] Episode completed with train_reward=62992197.9470 at step 44114
+[2025-10-05 21:55:53] Project epoch 11 recorded at step 45056 (train_reward=62992197.9470, valid_reward=61436477.9593, total_env_steps=45056.0000, episodes_completed=46.0000)
+[2025-10-05 21:55:57] Episode completed with train_reward=26254922.4970 at step 45073
+[2025-10-05 21:56:12] Episode completed with train_reward=146606221.2931 at step 46032
+[2025-10-05 21:56:26] Episode completed with train_reward=89554482.7441 at step 46991
+[2025-10-05 21:56:40] Episode completed with train_reward=48151074.9289 at step 47950
+[2025-10-05 21:56:54] Episode completed with train_reward=150160580.9320 at step 48909
+[2025-10-05 21:56:57] Project epoch 12 recorded at step 49152 (train_reward=150160580.9320, valid_reward=61436477.9593, total_env_steps=49152.0000, episodes_completed=51.0000)
+[2025-10-05 21:57:12] Episode completed with train_reward=610887.4491 at step 49868
+[2025-10-05 21:57:25] Episode completed with train_reward=27362826.7234 at step 50827
+[2025-10-05 21:57:35] Episode completed with train_reward=174116982.7226 at step 51786
+[2025-10-05 21:57:45] Episode completed with train_reward=82640342.9774 at step 52745
+[2025-10-05 21:57:52] Project epoch 13 recorded at step 53248 (train_reward=82640342.9774, valid_reward=61436477.9593, total_env_steps=53248.0000, episodes_completed=55.0000)
+[2025-10-05 21:58:03] Episode completed with train_reward=156551386.7587 at step 53704
+[2025-10-05 21:58:18] Episode completed with train_reward=165922693.0542 at step 54663
+[2025-10-05 21:58:32] Episode completed with train_reward=25900036.9828 at step 55622
+[2025-10-05 21:58:47] Episode completed with train_reward=52729841.0660 at step 56581
+[2025-10-05 21:58:58] Project epoch 14 recorded at step 57344 (train_reward=52729841.0660, valid_reward=61436477.9593, total_env_steps=57344.0000, episodes_completed=59.0000)
+[2025-10-05 21:59:05] Episode completed with train_reward=179870299.2293 at step 57540
+[2025-10-05 21:59:17] Episode completed with train_reward=19157619.1904 at step 58499
+[2025-10-05 21:59:26] Episode completed with train_reward=123704188.9912 at step 59458
+[2025-10-05 21:59:36] Episode completed with train_reward=206674724.6062 at step 60417
+[2025-10-05 21:59:46] Episode completed with train_reward=56465281.7880 at step 61376
+[2025-10-05 21:59:47] Project epoch 15 recorded at step 61440 (train_reward=56465281.7880, valid_reward=61436477.9593, total_env_steps=61440.0000, episodes_completed=64.0000)
+[2025-10-05 21:59:47] Checkpoint saved at project epoch 15 (step 61440)
+[2025-10-05 21:59:48] Validation @ project epoch 15: reward=61638201.5583, std=0.0000
+[2025-10-05 21:59:48] New best model saved at best_model_epoch_15.zip (reward 61638201.5583)
+[2025-10-05 22:00:01] Episode completed with train_reward=93448517.2393 at step 62335
+[2025-10-05 22:00:11] Episode completed with train_reward=187009426.0383 at step 63294
+[2025-10-05 22:00:21] Episode completed with train_reward=81047091.2315 at step 64253
+[2025-10-05 22:00:31] Episode completed with train_reward=42348190.2499 at step 65212
+[2025-10-05 22:00:35] Project epoch 16 recorded at step 65536 (train_reward=42348190.2499, valid_reward=61638201.5583, total_env_steps=65536.0000, episodes_completed=68.0000)
+[2025-10-05 22:00:45] Episode completed with train_reward=24542682.7224 at step 66171
+[2025-10-05 22:00:55] Episode completed with train_reward=57308181.0218 at step 67130
+[2025-10-05 22:01:05] Episode completed with train_reward=40798690.4464 at step 68089
+[2025-10-05 22:01:15] Episode completed with train_reward=68021611.0973 at step 69048
+[2025-10-05 22:01:21] Project epoch 17 recorded at step 69632 (train_reward=68021611.0973, valid_reward=61638201.5583, total_env_steps=69632.0000, episodes_completed=72.0000)
+[2025-10-05 22:01:29] Episode completed with train_reward=69119240.2203 at step 70007
+[2025-10-05 22:01:39] Episode completed with train_reward=64072598.2042 at step 70966
+[2025-10-05 22:01:49] Episode completed with train_reward=282268323.9072 at step 71925
+[2025-10-05 22:01:59] Episode completed with train_reward=146991482.3983 at step 72884
+[2025-10-05 22:02:08] Project epoch 18 recorded at step 73728 (train_reward=146991482.3983, valid_reward=61638201.5583, total_env_steps=73728.0000, episodes_completed=76.0000)
+[2025-10-05 22:02:14] Episode completed with train_reward=29565058.5571 at step 73843
+[2025-10-05 22:02:24] Episode completed with train_reward=79487152.5999 at step 74802
+[2025-10-05 22:02:34] Episode completed with train_reward=101388187.5559 at step 75761
+[2025-10-05 22:02:44] Episode completed with train_reward=132391396.7912 at step 76720
+[2025-10-05 22:02:54] Episode completed with train_reward=89575155.6208 at step 77679
+[2025-10-05 22:02:55] Project epoch 19 recorded at step 77824 (train_reward=89575155.6208, valid_reward=61638201.5583, total_env_steps=77824.0000, episodes_completed=81.0000)
+[2025-10-05 22:03:08] Episode completed with train_reward=12613559.8916 at step 78638
+[2025-10-05 22:03:18] Episode completed with train_reward=30178982.0807 at step 79597
+[2025-10-05 22:03:28] Episode completed with train_reward=132414583.0263 at step 80556
+[2025-10-05 22:03:38] Episode completed with train_reward=60035649.1121 at step 81515
+[2025-10-05 22:03:42] Project epoch 20 recorded at step 81920 (train_reward=60035649.1121, valid_reward=61638201.5583, total_env_steps=81920.0000, episodes_completed=85.0000)
+[2025-10-05 22:03:42] Checkpoint saved at project epoch 20 (step 81920)
+[2025-10-05 22:03:42] Validation @ project epoch 20: reward=64149506.1453, std=0.0000
+[2025-10-05 22:03:42] New best model saved at best_model_epoch_20.zip (reward 64149506.1453)
+[2025-10-05 22:03:52] Episode completed with train_reward=99935322.8806 at step 82474
+[2025-10-05 22:04:02] Episode completed with train_reward=89299345.2144 at step 83433
+[2025-10-05 22:04:12] Episode completed with train_reward=30185329.3068 at step 84392
+[2025-10-05 22:04:22] Episode completed with train_reward=74509682.3262 at step 85351
+[2025-10-05 22:04:29] Project epoch 21 recorded at step 86016 (train_reward=74509682.3262, valid_reward=64149506.1453, total_env_steps=86016.0000, episodes_completed=89.0000)
+[2025-10-05 22:04:36] Episode completed with train_reward=98621942.2067 at step 86310
+[2025-10-05 22:04:45] Episode completed with train_reward=119766886.4640 at step 87269
+[2025-10-05 22:04:56] Episode completed with train_reward=10853404.0906 at step 88228
+[2025-10-05 22:05:06] Episode completed with train_reward=123941223.4334 at step 89187
+[2025-10-05 22:05:15] Project epoch 22 recorded at step 90112 (train_reward=123941223.4334, valid_reward=64149506.1453, total_env_steps=90112.0000, episodes_completed=93.0000)
+[2025-10-05 22:05:19] Episode completed with train_reward=58982747.9606 at step 90146
+[2025-10-05 22:05:29] Episode completed with train_reward=111748788.1508 at step 91105
+[2025-10-05 22:05:39] Episode completed with train_reward=16140556.9578 at step 92064
+[2025-10-05 22:05:49] Episode completed with train_reward=90927368.5803 at step 93023
+[2025-10-05 22:05:59] Episode completed with train_reward=140695627.3984 at step 93982
+[2025-10-05 22:06:01] Project epoch 23 recorded at step 94208 (train_reward=140695627.3984, valid_reward=64149506.1453, total_env_steps=94208.0000, episodes_completed=98.0000)
+[2025-10-05 22:06:13] Episode completed with train_reward=137588139.0479 at step 94941
+[2025-10-05 22:06:23] Episode completed with train_reward=72524961.9756 at step 95900
+[2025-10-05 22:06:33] Episode completed with train_reward=195013933.9175 at step 96859
+[2025-10-05 22:06:42] Episode completed with train_reward=-9055470.1236 at step 97818
+[2025-10-05 22:06:47] Project epoch 24 recorded at step 98304 (train_reward=-9055470.1236, valid_reward=64149506.1453, total_env_steps=98304.0000, episodes_completed=102.0000)
+[2025-10-05 22:06:55] Episode completed with train_reward=137852912.7889 at step 98777
+[2025-10-05 22:07:05] Episode completed with train_reward=100451367.7562 at step 99736
+[2025-10-05 22:07:15] Episode completed with train_reward=160944643.1171 at step 100695
+[2025-10-05 22:07:29] Episode completed with train_reward=193324446.0268 at step 101654
+[2025-10-05 22:07:39] Project epoch 25 recorded at step 102400 (train_reward=193324446.0268, valid_reward=64149506.1453, total_env_steps=102400.0000, episodes_completed=106.0000)
+[2025-10-05 22:07:39] Checkpoint saved at project epoch 25 (step 102400)
+[2025-10-05 22:07:40] Validation @ project epoch 25: reward=52725361.6960, std=0.0000
+[2025-10-05 22:07:47] Episode completed with train_reward=248325219.5788 at step 102613
+[2025-10-05 22:08:01] Episode completed with train_reward=214365889.4980 at step 103572
+[2025-10-05 22:08:15] Episode completed with train_reward=41332436.2157 at step 104531
+[2025-10-05 22:08:29] Episode completed with train_reward=49570949.0145 at step 105490
+[2025-10-05 22:08:42] Episode completed with train_reward=112950076.4704 at step 106449
+[2025-10-05 22:08:43] Project epoch 26 recorded at step 106496 (train_reward=112950076.4704, valid_reward=52725361.6960, total_env_steps=106496.0000, episodes_completed=111.0000)
+[2025-10-05 22:09:00] Episode completed with train_reward=125377780.9968 at step 107408
+[2025-10-05 22:09:14] Episode completed with train_reward=203254368.1902 at step 108367
+[2025-10-05 22:09:28] Episode completed with train_reward=70288486.8618 at step 109326
+[2025-10-05 22:09:41] Episode completed with train_reward=225506381.7792 at step 110285
+[2025-10-05 22:09:46] Project epoch 27 recorded at step 110592 (train_reward=225506381.7792, valid_reward=52725361.6960, total_env_steps=110592.0000, episodes_completed=115.0000)
+[2025-10-05 22:09:50] Final validation reward=63675932.0881, std=0.0000
+[2025-10-05 22:09:50] Actual training steps 110592 exceeded planned 108000 by 2592 to honor rollout multiple of 4096.
+[2025-10-05 22:09:50] Performance summary:
+[2025-10-05 22:09:50] alias=trial_v3_02_ppo
+[2025-10-05 22:09:50] start_timesteps=0
+[2025-10-05 22:09:50] episode_steps=900
+[2025-10-05 22:09:50] planned_epochs=120
+[2025-10-05 22:09:50] project_epoch_unit=steps
+[2025-10-05 22:09:50] project_epoch_value=4096.0
+[2025-10-05 22:09:50] planned_project_epochs=27
+[2025-10-05 22:09:50] planned_timesteps=108000
+[2025-10-05 22:09:50] log_interval_project_epochs=1
+[2025-10-05 22:09:50] eval_interval_project_epochs=5
+[2025-10-05 22:09:50] checkpoint_interval_project_epochs=5
+[2025-10-05 22:09:50] project_epochs_completed=27
+[2025-10-05 22:09:50] total_env_steps=110592
+[2025-10-05 22:09:50] episodes_completed=115
+[2025-10-05 22:09:50] updates_applied=135
+[2025-10-05 22:09:50] wall_time=1425.7605520000216
+[2025-10-05 22:09:50] algorithm=PPO
+[2025-10-05 22:09:50] n_steps=4096
+[2025-10-05 22:09:50] policy=MlpPolicy
+[2025-10-05 22:09:50] last_train_reward=225506381.7792499
+[2025-10-05 22:09:50] nav=101111464.06475
+[2025-10-05 22:09:50] turnover=0.3010349254342074
+[2025-10-05 22:09:50] drawdown=0.17794516426572426
+[2025-10-05 22:09:50] last_checkpoint_project_epoch=27
+[2025-10-05 22:09:50] last_checkpoint=110592
+[2025-10-05 22:09:50] last_valid_reward=63675932.088100016
+[2025-10-05 22:09:50] last_eval_epoch=25
+[2025-10-05 22:09:50] run_completed=True
+[2025-10-05 22:09:50] train_timesteps=110592
+[2025-10-05 22:09:50] train_epochs=123
+[2025-10-05 22:09:50] train_timesteps_overrun=2592
+[2025-10-05 22:09:50] train_epochs_overrun=3
+[2025-10-05 22:09:50] train_reward=225506381.7792499
+[2025-10-05 22:09:50] valid_reward=63675932.088100016
+[2025-10-05 22:09:50] eval_std_reward=0.0
+[2025-10-05 22:09:50] final_checkpoint=artifacts\runs\20251005-214603_trial_v3_02_ppo\checkpoints\step_110592\model.pt
+[2025-10-05 22:09:50] date=2025-10-05
+[2025-10-05 22:09:50] Training complete

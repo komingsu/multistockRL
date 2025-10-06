@@ -1,0 +1,190 @@
+data:
+  path: data/proc/daily_with_indicators.csv
+  date_column: date
+  symbol_column: symbol
+  categorical_columns:
+    industry:
+      missing_token: UNKNOWN_INDUSTRY
+    market:
+      missing_token: UNKNOWN_MARKET
+    symbol:
+      missing_token: UNKNOWN_SYMBOL
+  feature_columns:
+    price:
+    - open
+    - high
+    - low
+    - close
+    - volume
+    - value
+    - market_cap
+    - change
+    - change_rate
+    - range_pct
+    - gap_pct
+    flows:
+    - prsn_buy_val_ratio
+    - prsn_sell_val_ratio
+    - prsn_net_val_ratio
+    - prsn_buy_vol_ratio
+    - prsn_sell_vol_ratio
+    - prsn_net_vol_ratio
+    - frgn_buy_val_ratio
+    - frgn_sell_val_ratio
+    - frgn_net_val_ratio
+    - frgn_buy_vol_ratio
+    - frgn_sell_vol_ratio
+    - frgn_net_val_ratio
+    - orgn_buy_val_ratio
+    - orgn_sell_val_ratio
+    - orgn_net_val_ratio
+    - orgn_buy_vol_ratio
+    - orgn_sell_vol_ratio
+    - orgn_net_val_ratio
+    technical:
+    - ma_5
+    - ma_10
+    - ma_20
+    - dist_ma5
+    - dist_ma10
+    - dist_ma20
+    - ma10_slope
+    - ma20_slope
+    - atr_5
+    - atr_14
+    - rv_10
+    - rv_20
+  target_column: close
+  target_transform: log_return
+splits:
+  train:
+    start: 2020-09-28
+    end: 2024-12-31
+  validation:
+    start: 2025-01-02
+    end: 2025-06-30
+  test:
+    start: 2025-07-01
+    end: 2025-09-26
+window:
+  size: 60
+  horizon: 1
+  step: 1
+  normalization:
+    method: zscore
+    scope: window
+  include_future_targets: false
+loader:
+  drop_na_targets: true
+  enforce_sort: true
+  float_dtype: float32
+  cache:
+    enabled: false
+preprocessing:
+  lag_features:
+  - column: close
+    lags:
+    - 1
+    - 5
+    - 10
+    transform: log_return
+    feature_group: price
+    description: Trailing log return of the closing price capturing short, weekly,
+      and bi-weekly momentum.
+  - column: volume
+    lags:
+    - 1
+    transform: pct_change
+    feature_group: liquidity
+    description: One-day relative change in traded volume to surface participation
+      shocks.
+  masks:
+    trading_gap: true
+environment:
+  initial_cash: 10000000000.0
+  max_leverage: 1.0
+  n: 100
+  reward_scaling: 1.0
+  max_steps: null
+  risk_free_rate: 0.0
+  friction:
+    commission_rate: 0.00025
+    min_commission: 0.0
+    slippage_bps: 1.0
+  stress:
+    enabled: false
+    commission_multiplier: 1.0
+    slippage_multiplier: 1.0
+agents:
+  default: PPO
+  policies:
+    PPO:
+      policy: MlpPolicy
+      learning_rate: 0.0003
+      batch_size: 256
+      n_steps: 2048
+    SAC:
+      policy: MlpPolicy
+      learning_rate: 0.0003
+      buffer_size: 200000
+      batch_size: 256
+      train_freq:
+      - 1
+      - step
+      gradient_steps: 1
+      tau: 0.005
+      gamma: 0.99
+      ent_coef: auto
+      target_update_interval: 1
+      learning_starts: 1000
+    A2C:
+      policy: MlpPolicy
+      learning_rate: 0.0007
+    DDPG:
+      policy: MlpPolicy
+      learning_rate: 0.0005
+      buffer_size: 200000
+      batch_size: 256
+      train_freq:
+      - 1
+      - step
+      gradient_steps: 1
+      tau: 0.005
+      gamma: 0.99
+      learning_starts: 1000
+    TD3:
+      policy: MlpPolicy
+      learning_rate: 0.0005
+      buffer_size: 200000
+      batch_size: 256
+      train_freq:
+      - 1
+      - step
+      gradient_steps: 1
+      tau: 0.005
+      gamma: 0.99
+      policy_delay: 2
+      target_noise_clip: 0.5
+      target_policy_noise: 0.2
+      learning_starts: 1000
+logging:
+  run_dir: artifacts/runs
+  metrics:
+  - train_reward
+  - valid_reward
+  - project_epoch
+  - total_env_steps
+  - episodes_completed
+  - updates_applied
+  - nav
+  - turnover
+  - drawdown
+  flush_interval: 100
+training:
+  project_epoch_unit: steps
+  project_epoch_value: 2048
+  log_interval_project_epochs: 1
+  eval_interval_project_epochs: 1
+  checkpoint_interval_project_epochs: 1
+  eval_episodes: 1
+  total_timesteps: 4096

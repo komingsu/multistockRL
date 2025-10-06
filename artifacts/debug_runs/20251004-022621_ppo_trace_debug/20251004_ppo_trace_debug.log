@@ -1,0 +1,5 @@
+[2025-10-04 02:26:21] alias=ppo_trace_debug
+[2025-10-04 02:26:21] Config snapshot written to config.yaml
+[2025-10-04 02:26:21] Initialising training for ppo_trace_debug: epochs≈2, episode_steps=600
+[2025-10-04 02:26:31] Episode completed with train_reward=65765135.1437 at step 600
+[2025-10-04 02:26:31] Epoch 1 recorded at 600 steps (train/clip_fraction=0.7484, train/clip_range=0.2000, train/entropy_loss=-142.9796, train/explained_variance=-0.1481, train/learning_rate=0.0003, train/loss=-0.1662, train/n_updates=40.0000, train/policy_gradient_loss=-0.1408, train/value_loss=0.0125)

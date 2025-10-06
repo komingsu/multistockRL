@@ -1,0 +1,13 @@
+{
+  "checkpoint_timesteps": 110592.0,
+  "episodes": 1.0,
+  "max_drawdown": 0.048091305003090105,
+  "mean_final_nav": 10449393603.7578,
+  "mean_final_reward": 449393603.75779915,
+  "mean_max_drawdown": 0.048091305003090105,
+  "mean_total_return": 0.04493936037577991,
+  "mean_turnover": 0.013144983381412016,
+  "std_final_nav": 0.0,
+  "std_final_reward": 0.0,
+  "worst_total_return": 0.04493936037577991
+}

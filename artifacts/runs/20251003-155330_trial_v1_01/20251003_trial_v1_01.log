@@ -1,0 +1,15 @@
+[20251003-155330] alias=trial_v1_01
+[15:53:30] Config snapshot written to config.yaml
+[15:53:30] Initialising training for trial_v1_01
+[16:17:20] Evaluation completed: mean=-485.6486, std=0.0000
+Performance summary:
+ - alias: trial_v1_01
+ - start_timesteps: 0
+ - last_checkpoint: 1000000
+ - run_completed: True
+ - train_timesteps: 1000000
+ - eval_mean_reward: -485.64862400000004
+ - eval_std_reward: 5.684341886080802e-14
+ - final_checkpoint: artifacts\runs\20251003-155330_trial_v1_01\checkpoints\step_1000000\model.pt
+ - date: 2025-10-03
+[16:17:20] Training complete

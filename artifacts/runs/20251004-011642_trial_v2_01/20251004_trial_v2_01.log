@@ -1,0 +1,365 @@
+[2025-10-04 01:16:42] alias=trial_v2_01
+[2025-10-04 01:16:42] Config snapshot written to config.yaml
+[2025-10-04 01:16:42] Initialising training for trial_v2_01: epochs≈400, episode_steps=900
+[2025-10-04 01:16:54] Episode completed with train_reward=1355797626.9203 at step 959
+[2025-10-04 01:17:08] Episode completed with train_reward=1047744859.6897 at step 1918
+[2025-10-04 01:17:21] Episode completed with train_reward=482651014.3088 at step 2877
+[2025-10-04 01:17:36] Episode completed with train_reward=1021587677.5710 at step 3836
+[2025-10-04 01:17:47] Epoch 5 recorded at 4500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=3297297395875840.0000, train/n_updates=10.0000, train/policy_gradient_loss=-0.0000, train/value_loss=8907475531490918.0000)
+[2025-10-04 01:17:49] Validation @ epoch 5: reward=1755738413.0428, std=0.0000
+[2025-10-04 01:17:49] New best model saved at best_model_4500.zip (mean reward 1755738413.0428)
+[2025-10-04 01:17:52] Episode completed with train_reward=1646883286.0114 at step 4795
+[2025-10-04 01:18:01] Episode completed with train_reward=152787215.7190 at step 5754
+[2025-10-04 01:18:10] Episode completed with train_reward=476739067.8303 at step 6713
+[2025-10-04 01:18:19] Episode completed with train_reward=1384939632.7353 at step 7672
+[2025-10-04 01:18:33] Episode completed with train_reward=1480787672.5195 at step 8631
+[2025-10-04 01:18:37] Epoch 10 recorded at 9000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=5389564407447552.0000, train/n_updates=20.0000, train/policy_gradient_loss=-0.0000, train/value_loss=10320723698935398.0000)
+[2025-10-04 01:18:39] Validation @ epoch 10: reward=1810355069.3100, std=0.0000
+[2025-10-04 01:18:39] New best model saved at best_model_9000.zip (mean reward 1810355069.3100)
+[2025-10-04 01:18:45] Episode completed with train_reward=1054189471.3672 at step 9590
+[2025-10-04 01:18:54] Episode completed with train_reward=1418402552.0534 at step 10549
+[2025-10-04 01:19:04] Episode completed with train_reward=1139792107.0091 at step 11508
+[2025-10-04 01:19:18] Episode completed with train_reward=915712513.7178 at step 12467
+[2025-10-04 01:19:27] Episode completed with train_reward=1296267307.2780 at step 13426
+[2025-10-04 01:19:28] Epoch 15 recorded at 13500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=7009315223240704.0000, train/n_updates=30.0000, train/policy_gradient_loss=-0.0000, train/value_loss=13987561632851558.0000)
+[2025-10-04 01:19:30] Validation @ epoch 15: reward=1588173135.2897, std=0.0000
+[2025-10-04 01:19:39] Episode completed with train_reward=2112131563.8255 at step 14385
+[2025-10-04 01:19:47] Episode completed with train_reward=684848057.2148 at step 15344
+[2025-10-04 01:19:56] Episode completed with train_reward=1085845805.6285 at step 16303
+[2025-10-04 01:20:10] Episode completed with train_reward=689024240.7728 at step 17262
+[2025-10-04 01:20:17] Epoch 20 recorded at 18000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=6202269930356736.0000, train/n_updates=40.0000, train/policy_gradient_loss=-0.0000, train/value_loss=18244020480245760.0000)
+[2025-10-04 01:20:20] Validation @ epoch 20: reward=1550846311.2700, std=0.0000
+[2025-10-04 01:20:22] Episode completed with train_reward=768371293.9860 at step 18221
+[2025-10-04 01:20:31] Episode completed with train_reward=478430342.9023 at step 19180
+[2025-10-04 01:20:40] Episode completed with train_reward=1167838086.9528 at step 20139
+[2025-10-04 01:20:54] Episode completed with train_reward=618132126.6387 at step 21098
+[2025-10-04 01:21:04] Episode completed with train_reward=780915966.5347 at step 22057
+[2025-10-04 01:21:08] Epoch 25 recorded at 22500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=4643509260779520.0000, train/n_updates=50.0000, train/policy_gradient_loss=-0.0000, train/value_loss=5620132978937037.0000)
+[2025-10-04 01:21:10] Validation @ epoch 25: reward=1712080867.0137, std=0.0000
+[2025-10-04 01:21:15] Episode completed with train_reward=337380825.3268 at step 23016
+[2025-10-04 01:21:25] Episode completed with train_reward=741402404.5260 at step 23975
+[2025-10-04 01:21:39] Episode completed with train_reward=832966919.7725 at step 24934
+[2025-10-04 01:21:48] Episode completed with train_reward=1070137652.5122 at step 25893
+[2025-10-04 01:21:57] Episode completed with train_reward=587963028.6128 at step 26852
+[2025-10-04 01:21:59] Epoch 30 recorded at 27000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=1343486976589824.0000, train/n_updates=60.0000, train/policy_gradient_loss=-0.0000, train/value_loss=3500401663934464.0000)
+[2025-10-04 01:22:02] Validation @ epoch 30: reward=1588521576.8152, std=0.0000
+[2025-10-04 01:22:14] Episode completed with train_reward=1518332050.9455 at step 27811
+[2025-10-04 01:22:33] Episode completed with train_reward=1776638008.7375 at step 28770
+[2025-10-04 01:22:45] Episode completed with train_reward=602761439.0470 at step 29729
+[2025-10-04 01:22:54] Episode completed with train_reward=737081496.4419 at step 30688
+[2025-10-04 01:23:02] Epoch 35 recorded at 31500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=4516500098514944.0000, train/n_updates=70.0000, train/policy_gradient_loss=-0.0000, train/value_loss=9494275648022118.0000)
+[2025-10-04 01:23:04] Validation @ epoch 35: reward=1588521576.8152, std=0.0000
+[2025-10-04 01:23:06] Episode completed with train_reward=1156496337.8862 at step 31647
+[2025-10-04 01:23:15] Episode completed with train_reward=1549933411.9506 at step 32606
+[2025-10-04 01:23:30] Episode completed with train_reward=1406408848.5085 at step 33565
+[2025-10-04 01:23:39] Episode completed with train_reward=759714099.7310 at step 34524
+[2025-10-04 01:23:48] Episode completed with train_reward=1096858721.3823 at step 35483
+[2025-10-04 01:23:53] Epoch 40 recorded at 36000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=8024573551312896.0000, train/n_updates=80.0000, train/policy_gradient_loss=-0.0000, train/value_loss=16499116471641702.0000)
+[2025-10-04 01:23:55] Validation @ epoch 40: reward=1588521576.8152, std=0.0000
+[2025-10-04 01:23:59] Episode completed with train_reward=1925459946.3282 at step 36442
+[2025-10-04 01:24:14] Episode completed with train_reward=1877401490.9896 at step 37401
+[2025-10-04 01:24:23] Episode completed with train_reward=80079479.4380 at step 38360
+[2025-10-04 01:24:32] Episode completed with train_reward=1476788838.4800 at step 39319
+[2025-10-04 01:24:41] Episode completed with train_reward=1956434812.5450 at step 40278
+[2025-10-04 01:24:44] Epoch 45 recorded at 40500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=9712923584757760.0000, train/n_updates=90.0000, train/policy_gradient_loss=-0.0000, train/value_loss=15786177542802636.0000)
+[2025-10-04 01:24:46] Validation @ epoch 45: reward=1712080867.0137, std=0.0000
+[2025-10-04 01:24:58] Episode completed with train_reward=1030541896.9032 at step 41237
+[2025-10-04 01:25:08] Episode completed with train_reward=746203062.7185 at step 42196
+[2025-10-04 01:25:17] Episode completed with train_reward=1580867405.6750 at step 43155
+[2025-10-04 01:25:26] Episode completed with train_reward=1083766938.6369 at step 44114
+[2025-10-04 01:25:34] Epoch 50 recorded at 45000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=10695863357669376.0000, train/n_updates=100.0000, train/policy_gradient_loss=-0.0000, train/value_loss=20171553128631500.0000)
+[2025-10-04 01:25:37] Validation @ epoch 50: reward=2501272340.3825, std=0.0000
+[2025-10-04 01:25:37] New best model saved at best_model_45000.zip (mean reward 2501272340.3825)
+[2025-10-04 01:25:42] Episode completed with train_reward=716594959.3780 at step 45073
+[2025-10-04 01:25:52] Episode completed with train_reward=828929438.6967 at step 46032
+[2025-10-04 01:26:01] Episode completed with train_reward=1176995884.3981 at step 46991
+[2025-10-04 01:26:10] Episode completed with train_reward=2414035725.2620 at step 47950
+[2025-10-04 01:26:20] Episode completed with train_reward=1143720728.7069 at step 48909
+[2025-10-04 01:26:30] Epoch 55 recorded at 49500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=8804095083151360.0000, train/n_updates=120.0000, train/policy_gradient_loss=-0.0000, train/value_loss=20421564537241600.0000)
+[2025-10-04 01:26:33] Validation @ epoch 55: reward=1739744685.4910, std=0.0000
+[2025-10-04 01:26:36] Episode completed with train_reward=601447847.3887 at step 49868
+[2025-10-04 01:26:47] Episode completed with train_reward=2862513004.7797 at step 50827
+[2025-10-04 01:26:59] Episode completed with train_reward=757190098.6153 at step 51786
+[2025-10-04 01:27:12] Episode completed with train_reward=976513876.6065 at step 52745
+[2025-10-04 01:27:28] Episode completed with train_reward=2260738567.6397 at step 53704
+[2025-10-04 01:27:31] Epoch 60 recorded at 54000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=4465588898365440.0000, train/n_updates=130.0000, train/policy_gradient_loss=-0.0000, train/value_loss=21319826493197516.0000)
+[2025-10-04 01:27:34] Validation @ epoch 60: reward=1588521576.8152, std=0.0000
+[2025-10-04 01:27:43] Episode completed with train_reward=-158707146.0340 at step 54663
+[2025-10-04 01:27:57] Episode completed with train_reward=1140966851.5912 at step 55622
+[2025-10-04 01:28:11] Episode completed with train_reward=263861672.7763 at step 56581
+[2025-10-04 01:28:30] Episode completed with train_reward=359361241.3924 at step 57540
+[2025-10-04 01:28:43] Episode completed with train_reward=1185839311.7805 at step 58499
+[2025-10-04 01:28:43] Epoch 65 recorded at 58500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=6952019822641152.0000, train/n_updates=140.0000, train/policy_gradient_loss=-0.0000, train/value_loss=13760286891914036.0000)
+[2025-10-04 01:28:47] Validation @ epoch 65: reward=1588521576.8152, std=0.0000
+[2025-10-04 01:29:00] Episode completed with train_reward=1026270053.5383 at step 59458
+[2025-10-04 01:29:13] Episode completed with train_reward=1082174478.2373 at step 60417
+[2025-10-04 01:29:27] Episode completed with train_reward=573956321.3715 at step 61376
+[2025-10-04 01:29:44] Episode completed with train_reward=-310381121.6894 at step 62335
+[2025-10-04 01:29:51] Epoch 70 recorded at 63000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=5198364811460608.0000, train/n_updates=150.0000, train/policy_gradient_loss=-0.0000, train/value_loss=8646467384246272.0000)
+[2025-10-04 01:29:53] Validation @ epoch 70: reward=1810355069.3100, std=0.0000
+[2025-10-04 01:29:57] Episode completed with train_reward=1685748810.5867 at step 63294
+[2025-10-04 01:30:10] Episode completed with train_reward=1400632061.7749 at step 64253
+[2025-10-04 01:30:23] Episode completed with train_reward=669213356.2287 at step 65212
+[2025-10-04 01:30:41] Episode completed with train_reward=773664224.2265 at step 66171
+[2025-10-04 01:30:54] Episode completed with train_reward=721336055.8666 at step 67130
+[2025-10-04 01:31:00] Epoch 75 recorded at 67500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=6360054680780800.0000, train/n_updates=160.0000, train/policy_gradient_loss=-0.0000, train/value_loss=11307765586722816.0000)
+[2025-10-04 01:31:03] Validation @ epoch 75: reward=1899995325.6207, std=0.0000
+[2025-10-04 01:31:12] Episode completed with train_reward=-289400964.9367 at step 68089
+[2025-10-04 01:31:25] Episode completed with train_reward=1825999715.4859 at step 69048
+[2025-10-04 01:31:43] Episode completed with train_reward=471480230.1817 at step 70007
+[2025-10-04 01:31:57] Episode completed with train_reward=756838933.2385 at step 70966
+[2025-10-04 01:32:10] Episode completed with train_reward=529961338.1450 at step 71925
+[2025-10-04 01:32:11] Epoch 80 recorded at 72000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=6277210667220992.0000, train/n_updates=170.0000, train/policy_gradient_loss=-0.0000, train/value_loss=9593339102258790.0000)
+[2025-10-04 01:32:14] Validation @ epoch 80: reward=1899995325.6207, std=0.0000
+[2025-10-04 01:32:27] Episode completed with train_reward=1602879190.9994 at step 72884
+[2025-10-04 01:32:45] Episode completed with train_reward=76739758.0978 at step 73843
+[2025-10-04 01:32:59] Episode completed with train_reward=1405764315.7587 at step 74802
+[2025-10-04 01:33:11] Episode completed with train_reward=1120275054.8834 at step 75761
+[2025-10-04 01:33:21] Epoch 85 recorded at 76500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=4832790080126976.0000, train/n_updates=180.0000, train/policy_gradient_loss=-0.0000, train/value_loss=7707765873469030.0000)
+[2025-10-04 01:33:24] Validation @ epoch 85: reward=1821077921.8425, std=0.0000
+[2025-10-04 01:33:27] Episode completed with train_reward=1785553276.5454 at step 76720
+[2025-10-04 01:33:40] Episode completed with train_reward=1100953831.6210 at step 77679
+[2025-10-04 01:33:54] Episode completed with train_reward=409152146.4266 at step 78638
+[2025-10-04 01:34:03] Episode completed with train_reward=-491453719.9670 at step 79597
+[2025-10-04 01:34:12] Episode completed with train_reward=710625032.1967 at step 80556
+[2025-10-04 01:34:18] Epoch 90 recorded at 81000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=8552782051147776.0000, train/n_updates=190.0000, train/policy_gradient_loss=-0.0000, train/value_loss=16149306531853108.0000)
+[2025-10-04 01:34:21] Validation @ epoch 90: reward=1811738907.4325, std=0.0000
+[2025-10-04 01:34:28] Episode completed with train_reward=-535251756.6283 at step 81515
+[2025-10-04 01:34:46] Episode completed with train_reward=1373243761.7119 at step 82474
+[2025-10-04 01:34:59] Episode completed with train_reward=501102574.5025 at step 83433
+[2025-10-04 01:35:13] Episode completed with train_reward=456516510.6307 at step 84392
+[2025-10-04 01:35:26] Episode completed with train_reward=258582182.5452 at step 85351
+[2025-10-04 01:35:28] Epoch 95 recorded at 85500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=1062016496173056.0000, train/n_updates=200.0000, train/policy_gradient_loss=-0.0000, train/value_loss=2538287652667392.0000)
+[2025-10-04 01:35:31] Validation @ epoch 95: reward=2305897688.9133, std=0.0000
+[2025-10-04 01:35:47] Episode completed with train_reward=2736743240.4838 at step 86310
+[2025-10-04 01:36:01] Episode completed with train_reward=36155016.7177 at step 87269
+[2025-10-04 01:36:14] Episode completed with train_reward=-160619489.3812 at step 88228
+[2025-10-04 01:36:25] Episode completed with train_reward=942639772.4567 at step 89187
+[2025-10-04 01:36:33] Epoch 100 recorded at 90000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=1857458599362560.0000, train/n_updates=210.0000, train/policy_gradient_loss=-0.0000, train/value_loss=5100564196727194.0000)
+[2025-10-04 01:36:36] Validation @ epoch 100: reward=2098438417.3343, std=0.0000
+[2025-10-04 01:36:43] Episode completed with train_reward=1474834133.3808 at step 90146
+[2025-10-04 01:36:56] Episode completed with train_reward=1194771338.6161 at step 91105
+[2025-10-04 01:37:09] Episode completed with train_reward=-191405561.1390 at step 92064
+[2025-10-04 01:37:21] Episode completed with train_reward=1145557457.9524 at step 93023
+[2025-10-04 01:37:35] Episode completed with train_reward=1336162810.4027 at step 93982
+[2025-10-04 01:37:47] Epoch 105 recorded at 94500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=7783284972978176.0000, train/n_updates=230.0000, train/policy_gradient_loss=-0.0000, train/value_loss=14174229514892084.0000)
+[2025-10-04 01:37:50] Validation @ epoch 105: reward=2372341629.9430, std=0.0000
+[2025-10-04 01:37:56] Episode completed with train_reward=-95755339.6253 at step 94941
+[2025-10-04 01:38:09] Episode completed with train_reward=2011719204.7740 at step 95900
+[2025-10-04 01:38:22] Episode completed with train_reward=462054641.3638 at step 96859
+[2025-10-04 01:38:34] Episode completed with train_reward=1280823957.9657 at step 97818
+[2025-10-04 01:38:50] Episode completed with train_reward=956973537.1698 at step 98777
+[2025-10-04 01:38:52] Epoch 110 recorded at 99000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=6946738086608896.0000, train/n_updates=240.0000, train/policy_gradient_loss=-0.0000, train/value_loss=12497146516131020.0000)
+[2025-10-04 01:38:54] Validation @ epoch 110: reward=2081857064.6180, std=0.0000
+[2025-10-04 01:39:02] Episode completed with train_reward=907905997.8110 at step 99736
+[2025-10-04 01:39:15] Episode completed with train_reward=426214698.9945 at step 100695
+[2025-10-04 01:39:29] Episode completed with train_reward=875108020.4455 at step 101654
+[2025-10-04 01:39:47] Episode completed with train_reward=1571178527.7329 at step 102613
+[2025-10-04 01:39:59] Epoch 115 recorded at 103500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=1285095956676608.0000, train/n_updates=250.0000, train/policy_gradient_loss=-0.0000, train/value_loss=5682879276882330.0000)
+[2025-10-04 01:40:02] Validation @ epoch 115: reward=2081857064.6180, std=0.0000
+[2025-10-04 01:40:03] Episode completed with train_reward=2110229995.0567 at step 103572
+[2025-10-04 01:40:17] Episode completed with train_reward=1442320585.2576 at step 104531
+[2025-10-04 01:40:30] Episode completed with train_reward=-225513687.2539 at step 105490
+[2025-10-04 01:40:43] Episode completed with train_reward=455286843.5802 at step 106449
+[2025-10-04 01:41:01] Episode completed with train_reward=110921399.4601 at step 107408
+[2025-10-04 01:41:09] Epoch 120 recorded at 108000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=16131122995920896.0000, train/n_updates=260.0000, train/policy_gradient_loss=-0.0000, train/value_loss=19580576017154048.0000)
+[2025-10-04 01:41:13] Validation @ epoch 120: reward=2081857064.6180, std=0.0000
+[2025-10-04 01:41:18] Episode completed with train_reward=823873836.6402 at step 108367
+[2025-10-04 01:41:30] Episode completed with train_reward=232072787.9220 at step 109326
+[2025-10-04 01:41:43] Episode completed with train_reward=1735750767.8983 at step 110285
+[2025-10-04 01:42:00] Episode completed with train_reward=590933873.8384 at step 111244
+[2025-10-04 01:42:14] Episode completed with train_reward=-57530605.3515 at step 112203
+[2025-10-04 01:42:18] Epoch 125 recorded at 112500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=1258437899976704.0000, train/n_updates=270.0000, train/policy_gradient_loss=-0.0000, train/value_loss=7945817761932902.0000)
+[2025-10-04 01:42:22] Validation @ epoch 125: reward=1890576669.4068, std=0.0000
+[2025-10-04 01:42:31] Episode completed with train_reward=474697317.7580 at step 113162
+[2025-10-04 01:42:43] Episode completed with train_reward=657138676.1028 at step 114121
+[2025-10-04 01:42:59] Episode completed with train_reward=263382024.4618 at step 115080
+[2025-10-04 01:43:08] Episode completed with train_reward=970140300.7508 at step 116039
+[2025-10-04 01:43:21] Episode completed with train_reward=408765875.9527 at step 116998
+[2025-10-04 01:43:21] Epoch 130 recorded at 117000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=646499952230400.0000, train/n_updates=280.0000, train/policy_gradient_loss=-0.0000, train/value_loss=2134980161018265.5000)
+[2025-10-04 01:43:24] Validation @ epoch 130: reward=2250612572.9483, std=0.0000
+[2025-10-04 01:43:37] Episode completed with train_reward=1487251483.8375 at step 117957
+[2025-10-04 01:43:56] Episode completed with train_reward=2587303009.5280 at step 118916
+[2025-10-04 01:44:09] Episode completed with train_reward=811924734.2660 at step 119875
+[2025-10-04 01:44:22] Episode completed with train_reward=753406313.6758 at step 120834
+[2025-10-04 01:44:32] Epoch 135 recorded at 121500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=3955426508931072.0000, train/n_updates=290.0000, train/policy_gradient_loss=-0.0000, train/value_loss=7167231849293414.0000)
+[2025-10-04 01:44:35] Validation @ epoch 135: reward=1806689083.2383, std=0.0000
+[2025-10-04 01:44:39] Episode completed with train_reward=10117778.8812 at step 121793
+[2025-10-04 01:44:52] Episode completed with train_reward=576341557.3482 at step 122752
+[2025-10-04 01:45:11] Episode completed with train_reward=1169120728.0603 at step 123711
+[2025-10-04 01:45:24] Episode completed with train_reward=1941002133.0144 at step 124670
+[2025-10-04 01:45:37] Episode completed with train_reward=1229390395.2718 at step 125629
+[2025-10-04 01:45:43] Epoch 140 recorded at 126000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=8167325916200960.0000, train/n_updates=300.0000, train/policy_gradient_loss=-0.0000, train/value_loss=17451572130322842.0000)
+[2025-10-04 01:45:46] Validation @ epoch 140: reward=1846278372.0268, std=0.0000
+[2025-10-04 01:45:54] Episode completed with train_reward=742942495.9284 at step 126588
+[2025-10-04 01:46:13] Episode completed with train_reward=10014922.5500 at step 127547
+[2025-10-04 01:46:26] Episode completed with train_reward=1602042202.8343 at step 128506
+[2025-10-04 01:46:39] Episode completed with train_reward=415840515.7292 at step 129465
+[2025-10-04 01:46:53] Episode completed with train_reward=1573106293.0538 at step 130424
+[2025-10-04 01:46:54] Epoch 145 recorded at 130500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=7383266751414272.0000, train/n_updates=310.0000, train/policy_gradient_loss=-0.0000, train/value_loss=15219595858988236.0000)
+[2025-10-04 01:46:57] Validation @ epoch 145: reward=1846278372.0268, std=0.0000
+[2025-10-04 01:47:11] Episode completed with train_reward=835290877.1108 at step 131383
+[2025-10-04 01:47:20] Episode completed with train_reward=336714023.0638 at step 132342
+[2025-10-04 01:47:33] Episode completed with train_reward=5833589.7588 at step 133301
+[2025-10-04 01:47:46] Episode completed with train_reward=386001994.6305 at step 134260
+[2025-10-04 01:47:56] Epoch 150 recorded at 135000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=6218271367888896.0000, train/n_updates=320.0000, train/policy_gradient_loss=-0.0000, train/value_loss=11025530144948224.0000)
+[2025-10-04 01:47:59] Validation @ epoch 150: reward=2103904007.5710, std=0.0000
+[2025-10-04 01:48:07] Episode completed with train_reward=-682545481.7867 at step 135219
+[2025-10-04 01:48:20] Episode completed with train_reward=1689990901.0017 at step 136178
+[2025-10-04 01:48:33] Episode completed with train_reward=1122459034.4045 at step 137137
+[2025-10-04 01:48:47] Episode completed with train_reward=1575233932.7445 at step 138096
+[2025-10-04 01:49:00] Episode completed with train_reward=2022614572.3107 at step 139055
+[2025-10-04 01:49:12] Epoch 155 recorded at 139500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=15101676243386368.0000, train/n_updates=340.0000, train/policy_gradient_loss=-0.0000, train/value_loss=23583737618051892.0000)
+[2025-10-04 01:49:15] Validation @ epoch 155: reward=2243287156.8618, std=0.0000
+[2025-10-04 01:49:22] Episode completed with train_reward=1169773668.9533 at step 140014
+[2025-10-04 01:49:34] Episode completed with train_reward=529093892.4750 at step 140973
+[2025-10-04 01:49:43] Episode completed with train_reward=696100608.1579 at step 141932
+[2025-10-04 01:49:53] Episode completed with train_reward=-79324363.2915 at step 142891
+[2025-10-04 01:50:11] Episode completed with train_reward=852072114.7643 at step 143850
+[2025-10-04 01:50:13] Epoch 160 recorded at 144000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=997709360136192.0000, train/n_updates=350.0000, train/policy_gradient_loss=-0.0000, train/value_loss=4523271766251930.0000)
+[2025-10-04 01:50:16] Validation @ epoch 160: reward=2372766725.9705, std=0.0000
+[2025-10-04 01:50:28] Episode completed with train_reward=1365774439.1475 at step 144809
+[2025-10-04 01:50:41] Episode completed with train_reward=1101833451.4731 at step 145768
+[2025-10-04 01:50:54] Episode completed with train_reward=551026510.4005 at step 146727
+[2025-10-04 01:51:12] Episode completed with train_reward=1647256519.9412 at step 147686
+[2025-10-04 01:51:24] Epoch 165 recorded at 148500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=3291928686755840.0000, train/n_updates=360.0000, train/policy_gradient_loss=-0.0000, train/value_loss=8688590333883187.0000)
+[2025-10-04 01:51:27] Validation @ epoch 165: reward=2414646732.2670, std=0.0000
+[2025-10-04 01:51:30] Episode completed with train_reward=1775972104.4590 at step 148645
+[2025-10-04 01:51:44] Episode completed with train_reward=1457030279.7239 at step 149604
+[2025-10-04 01:51:56] Episode completed with train_reward=1157367514.8360 at step 150563
+[2025-10-04 01:52:05] Episode completed with train_reward=1884058402.7600 at step 151522
+[2025-10-04 01:52:19] Episode completed with train_reward=1529082885.7715 at step 152481
+[2025-10-04 01:52:24] Epoch 170 recorded at 153000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=16086486474555392.0000, train/n_updates=370.0000, train/policy_gradient_loss=-0.0000, train/value_loss=27234125107481804.0000)
+[2025-10-04 01:52:26] Validation @ epoch 170: reward=2414646732.2670, std=0.0000
+[2025-10-04 01:52:33] Episode completed with train_reward=458554604.3341 at step 153440
+[2025-10-04 01:52:46] Episode completed with train_reward=813765332.4952 at step 154399
+[2025-10-04 01:52:59] Episode completed with train_reward=274925370.0215 at step 155358
+[2025-10-04 01:53:18] Episode completed with train_reward=116046475.9986 at step 156317
+[2025-10-04 01:53:31] Episode completed with train_reward=1356562595.1325 at step 157276
+[2025-10-04 01:53:35] Epoch 175 recorded at 157500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=424224254590976.0000, train/n_updates=380.0000, train/policy_gradient_loss=-0.0000, train/value_loss=6948625484821299.0000)
+[2025-10-04 01:53:38] Validation @ epoch 175: reward=3114245443.0925, std=0.0000
+[2025-10-04 01:53:38] New best model saved at best_model_157500.zip (mean reward 3114245443.0925)
+[2025-10-04 01:53:48] Episode completed with train_reward=528554846.9545 at step 158235
+[2025-10-04 01:54:02] Episode completed with train_reward=1242311527.9495 at step 159194
+[2025-10-04 01:54:20] Episode completed with train_reward=2240038517.6110 at step 160153
+[2025-10-04 01:54:33] Episode completed with train_reward=720168908.3658 at step 161112
+[2025-10-04 01:54:42] Epoch 180 recorded at 162000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=2410132172439552.0000, train/n_updates=390.0000, train/policy_gradient_loss=-0.0000, train/value_loss=7773859928971674.0000)
+[2025-10-04 01:54:46] Validation @ epoch 180: reward=2331715323.3173, std=0.0000
+[2025-10-04 01:54:47] Episode completed with train_reward=1607673815.9133 at step 162071
+[2025-10-04 01:54:59] Episode completed with train_reward=906691931.9118 at step 163030
+[2025-10-04 01:55:18] Episode completed with train_reward=978298698.1627 at step 163989
+[2025-10-04 01:55:32] Episode completed with train_reward=953238321.5303 at step 164948
+[2025-10-04 01:55:46] Episode completed with train_reward=1272760129.9622 at step 165907
+[2025-10-04 01:55:53] Epoch 185 recorded at 166500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=5100937236447232.0000, train/n_updates=400.0000, train/policy_gradient_loss=-0.0000, train/value_loss=18910311259255604.0000)
+[2025-10-04 01:55:57] Validation @ epoch 185: reward=2331715323.3173, std=0.0000
+[2025-10-04 01:56:03] Episode completed with train_reward=948817285.1793 at step 166866
+[2025-10-04 01:56:16] Episode completed with train_reward=-60006923.8608 at step 167825
+[2025-10-04 01:56:34] Episode completed with train_reward=626626009.4970 at step 168784
+[2025-10-04 01:56:47] Episode completed with train_reward=1204148674.2284 at step 169743
+[2025-10-04 01:57:00] Episode completed with train_reward=1535145098.0002 at step 170702
+[2025-10-04 01:57:05] Epoch 190 recorded at 171000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=4022399007719424.0000, train/n_updates=410.0000, train/policy_gradient_loss=-0.0000, train/value_loss=9281648644744806.0000)
+[2025-10-04 01:57:09] Validation @ epoch 190: reward=2335853440.9333, std=0.0000
+[2025-10-04 01:57:18] Episode completed with train_reward=445737073.2560 at step 171661
+[2025-10-04 01:57:34] Episode completed with train_reward=354636397.6205 at step 172620
+[2025-10-04 01:57:43] Episode completed with train_reward=2150310537.9007 at step 173579
+[2025-10-04 01:57:52] Episode completed with train_reward=981157406.5030 at step 174538
+[2025-10-04 01:58:05] Episode completed with train_reward=1691019902.7038 at step 175497
+[2025-10-04 01:58:05] Epoch 195 recorded at 175500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=3122052529651712.0000, train/n_updates=420.0000, train/policy_gradient_loss=-0.0000, train/value_loss=9299582289077862.0000)
+[2025-10-04 01:58:08] Validation @ epoch 195: reward=2347687091.0398, std=0.0000
+[2025-10-04 01:58:26] Episode completed with train_reward=1858736837.7227 at step 176456
+[2025-10-04 01:58:39] Episode completed with train_reward=2066124749.6976 at step 177415
+[2025-10-04 01:58:53] Episode completed with train_reward=1062373395.6045 at step 178374
+[2025-10-04 01:59:06] Episode completed with train_reward=1238683458.5474 at step 179333
+[2025-10-04 01:59:15] Epoch 200 recorded at 180000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=6122029203849216.0000, train/n_updates=430.0000, train/policy_gradient_loss=-0.0000, train/value_loss=18125196102939444.0000)
+[2025-10-04 01:59:19] Validation @ epoch 200: reward=2332869022.3563, std=0.0000
+[2025-10-04 01:59:28] Episode completed with train_reward=446196641.9057 at step 180292
+[2025-10-04 01:59:42] Episode completed with train_reward=848197475.2100 at step 181251
+[2025-10-04 01:59:55] Episode completed with train_reward=-123703599.3872 at step 182210
+[2025-10-04 02:00:09] Episode completed with train_reward=1295964199.1338 at step 183169
+[2025-10-04 02:00:22] Episode completed with train_reward=1033908636.7503 at step 184128
+[2025-10-04 02:00:33] Epoch 205 recorded at 184500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=3162266040008704.0000, train/n_updates=450.0000, train/policy_gradient_loss=-0.0000, train/value_loss=7786204564239155.0000)
+[2025-10-04 02:00:36] Validation @ epoch 205: reward=2347687091.0398, std=0.0000
+[2025-10-04 02:00:42] Episode completed with train_reward=1450431986.2670 at step 185087
+[2025-10-04 02:00:51] Episode completed with train_reward=1375202463.5403 at step 186046
+[2025-10-04 02:01:01] Episode completed with train_reward=-707620339.6341 at step 187005
+[2025-10-04 02:01:13] Episode completed with train_reward=779016093.5277 at step 187964
+[2025-10-04 02:01:33] Episode completed with train_reward=668359040.4296 at step 188923
+[2025-10-04 02:01:34] Epoch 210 recorded at 189000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=3384021912387584.0000, train/n_updates=460.0000, train/policy_gradient_loss=-0.0000, train/value_loss=10789339596324864.0000)
+[2025-10-04 02:01:37] Validation @ epoch 210: reward=1847889943.7118, std=0.0000
+[2025-10-04 02:01:50] Episode completed with train_reward=1837639687.4000 at step 189882
+[2025-10-04 02:02:04] Episode completed with train_reward=725746604.7678 at step 190841
+[2025-10-04 02:02:17] Episode completed with train_reward=2067095256.0638 at step 191800
+[2025-10-04 02:02:36] Episode completed with train_reward=348353696.5251 at step 192759
+[2025-10-04 02:02:46] Epoch 215 recorded at 193500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=4065017968197632.0000, train/n_updates=470.0000, train/policy_gradient_loss=-0.0000, train/value_loss=18233865821958964.0000)
+[2025-10-04 02:02:49] Validation @ epoch 215: reward=1847889943.7118, std=0.0000
+[2025-10-04 02:02:52] Episode completed with train_reward=1185933233.0768 at step 193718
+[2025-10-04 02:03:05] Episode completed with train_reward=1509904027.3204 at step 194677
+[2025-10-04 02:03:18] Episode completed with train_reward=996552960.2678 at step 195636
+[2025-10-04 02:03:32] Episode completed with train_reward=1924436884.4468 at step 196595
+[2025-10-04 02:03:49] Episode completed with train_reward=287753577.3180 at step 197554
+[2025-10-04 02:03:54] Epoch 220 recorded at 198000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=14122823131856896.0000, train/n_updates=480.0000, train/policy_gradient_loss=-0.0000, train/value_loss=17982148747617894.0000)
+[2025-10-04 02:03:58] Validation @ epoch 220: reward=1847889943.7118, std=0.0000
+[2025-10-04 02:04:05] Episode completed with train_reward=102604950.9990 at step 198513
+[2025-10-04 02:04:19] Episode completed with train_reward=633061102.4855 at step 199472
+[2025-10-04 02:04:32] Episode completed with train_reward=1344238040.6140 at step 200431
+[2025-10-04 02:04:52] Episode completed with train_reward=1186838626.6038 at step 201390
+[2025-10-04 02:05:06] Episode completed with train_reward=611934647.9588 at step 202349
+[2025-10-04 02:05:08] Epoch 225 recorded at 202500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=1864316722610176.0000, train/n_updates=490.0000, train/policy_gradient_loss=-0.0000, train/value_loss=4865637942611149.0000)
+[2025-10-04 02:05:12] Validation @ epoch 225: reward=2058024876.1110, std=0.0000
+[2025-10-04 02:05:23] Episode completed with train_reward=607927323.6130 at step 203308
+[2025-10-04 02:05:37] Episode completed with train_reward=1033724315.8747 at step 204267
+[2025-10-04 02:05:56] Episode completed with train_reward=776732126.2345 at step 205226
+[2025-10-04 02:06:09] Episode completed with train_reward=689414959.6227 at step 206185
+[2025-10-04 02:06:21] Epoch 230 recorded at 207000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=4224366355152896.0000, train/n_updates=500.0000, train/policy_gradient_loss=-0.0000, train/value_loss=6811280470337126.0000)
+[2025-10-04 02:06:24] Validation @ epoch 230: reward=2044342204.1488, std=0.0000
+[2025-10-04 02:06:26] Episode completed with train_reward=-108626767.5983 at step 207144
+[2025-10-04 02:06:35] Episode completed with train_reward=319608722.7622 at step 208103
+[2025-10-04 02:06:49] Episode completed with train_reward=1784194650.0905 at step 209062
+[2025-10-04 02:06:58] Episode completed with train_reward=1387527599.3318 at step 210021
+[2025-10-04 02:07:07] Episode completed with train_reward=1039141893.9280 at step 210980
+[2025-10-04 02:07:13] Epoch 235 recorded at 211500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=600186917224448.0000, train/n_updates=510.0000, train/policy_gradient_loss=-0.0000, train/value_loss=2521668812747571.0000)
+[2025-10-04 02:07:15] Validation @ epoch 235: reward=2870697894.4328, std=0.0000
+[2025-10-04 02:07:19] Episode completed with train_reward=1106160799.8026 at step 211939
+[2025-10-04 02:07:29] Episode completed with train_reward=1295830233.6288 at step 212898
+[2025-10-04 02:07:43] Episode completed with train_reward=1437944245.7256 at step 213857
+[2025-10-04 02:07:53] Episode completed with train_reward=1547826095.3375 at step 214816
+[2025-10-04 02:08:02] Episode completed with train_reward=1242617106.0624 at step 215775
+[2025-10-04 02:08:04] Epoch 240 recorded at 216000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=11680567288397824.0000, train/n_updates=520.0000, train/policy_gradient_loss=-0.0000, train/value_loss=19223352735642420.0000)
+[2025-10-04 02:08:07] Validation @ epoch 240: reward=1608390793.6312, std=0.0000
+[2025-10-04 02:08:14] Episode completed with train_reward=1202611369.1384 at step 216734
+[2025-10-04 02:08:28] Episode completed with train_reward=-278426160.3770 at step 217693
+[2025-10-04 02:08:38] Episode completed with train_reward=1246133649.5912 at step 218652
+[2025-10-04 02:08:47] Episode completed with train_reward=796422496.0775 at step 219611
+[2025-10-04 02:08:56] Epoch 245 recorded at 220500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=11761525274443776.0000, train/n_updates=530.0000, train/policy_gradient_loss=-0.0000, train/value_loss=15761167696579788.0000)
+[2025-10-04 02:08:58] Validation @ epoch 245: reward=2870697894.4328, std=0.0000
+[2025-10-04 02:08:59] Episode completed with train_reward=2738065267.6199 at step 220570
+[2025-10-04 02:09:13] Episode completed with train_reward=562187246.5866 at step 221529
+[2025-10-04 02:09:22] Episode completed with train_reward=1268146050.3736 at step 222488
+[2025-10-04 02:09:31] Episode completed with train_reward=1180257906.7188 at step 223447
+[2025-10-04 02:09:41] Episode completed with train_reward=644977566.2840 at step 224406
+[2025-10-04 02:09:47] Epoch 250 recorded at 225000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=8179609522667520.0000, train/n_updates=540.0000, train/policy_gradient_loss=-0.0000, train/value_loss=20641117541027020.0000)
+[2025-10-04 02:09:49] Validation @ epoch 250: reward=2244103870.3273, std=0.0000
+[2025-10-04 02:09:58] Episode completed with train_reward=1244721520.0533 at step 225365
+[2025-10-04 02:10:07] Episode completed with train_reward=1703041921.9693 at step 226324
+[2025-10-04 02:10:17] Episode completed with train_reward=1757188506.6760 at step 227283
+[2025-10-04 02:10:26] Episode completed with train_reward=642423491.7920 at step 228242
+[2025-10-04 02:10:36] Episode completed with train_reward=2121170904.5464 at step 229201
+[2025-10-04 02:10:44] Epoch 255 recorded at 229500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=15832279171465216.0000, train/n_updates=560.0000, train/policy_gradient_loss=-0.0000, train/value_loss=26324414788691560.0000)
+[2025-10-04 02:10:46] Validation @ epoch 255: reward=2755211092.7038, std=0.0000
+[2025-10-04 02:10:52] Episode completed with train_reward=929593001.5125 at step 230160
+[2025-10-04 02:11:01] Episode completed with train_reward=794189613.8169 at step 231119
+[2025-10-04 02:11:10] Episode completed with train_reward=1265174525.7501 at step 232078
+[2025-10-04 02:11:19] Episode completed with train_reward=969673634.7990 at step 233037
+[2025-10-04 02:11:34] Episode completed with train_reward=1123943729.9957 at step 233996
+[2025-10-04 02:11:34] Epoch 260 recorded at 234000 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=0.0000, train/learning_rate=0.0003, train/loss=2629177115148288.0000, train/n_updates=570.0000, train/policy_gradient_loss=-0.0000, train/value_loss=8533765039901901.0000)
+[2025-10-04 02:11:36] Validation @ epoch 260: reward=2363917173.5245, std=0.0000
+[2025-10-04 02:11:45] Episode completed with train_reward=1067587708.2393 at step 234955
+[2025-10-04 02:11:55] Episode completed with train_reward=888242687.2533 at step 235914
+[2025-10-04 02:12:05] Episode completed with train_reward=710114665.3669 at step 236873
+[2025-10-04 02:12:20] Episode completed with train_reward=1265264382.3991 at step 237832
+[2025-10-04 02:12:27] Epoch 265 recorded at 238500 steps (train/clip_fraction=0.0000, train/clip_range=0.2000, train/entropy_loss=-249.2554, train/explained_variance=-0.0000, train/learning_rate=0.0003, train/loss=4797389349060608.0000, train/n_updates=580.0000, train/policy_gradient_loss=-0.0000, train/value_loss=7815712736070861.0000)
+[2025-10-04 02:12:29] Validation @ epoch 265: reward=2010884043.0195, std=0.0000
+[2025-10-04 02:12:32] Episode completed with train_reward=297943053.1684 at step 238791
+[2025-10-04 02:12:42] Episode completed with train_reward=559639810.6357 at step 239750
+[2025-10-04 02:12:51] Episode completed with train_reward=53766100.6015 at step 240709
+[2025-10-04 02:13:06] Episode completed with train_reward=1175856428.5502 at step 241668

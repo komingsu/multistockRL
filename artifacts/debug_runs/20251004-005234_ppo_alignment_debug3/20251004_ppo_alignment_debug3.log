@@ -1,0 +1,3 @@
+[2025-10-04 00:52:34] alias=ppo_alignment_debug3
+[2025-10-04 00:52:34] Config snapshot written to config.yaml
+[2025-10-04 00:52:34] Initialising training for ppo_alignment_debug3: epochs≈2, episode_steps=600
