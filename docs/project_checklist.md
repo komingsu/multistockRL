@@ -27,6 +27,7 @@
 - [ ] Cache processed datasets into `artifacts/datasets/`.
 - [x] Add automated schema validation on new CSV drops before training.
 - [x] Build validation notebook and pytest checks for schema enforcement.
+ - [x] Integrate data build CLI (`scripts/build_data.py`) with symbol master, features, selection, and turbulence (separate CSV).
 
 ## Environment
 - [x] Rewrite multi-stock gym environment with commission/slippage logic scaffolded.
@@ -58,10 +59,10 @@
 ## Evaluation
 - [x] Emit per-episode CSV traces (validation + final eval) with holdings/cash/value/deltas.
 - [x] Build standalone evaluation/report script for deterministic rollouts.
-- [ ] Generate performance report (returns, sharpe, drawdown, turnover).
+- [x] Generate performance report (returns, sharpe, drawdown, turnover).
 - [x] Add stress testing hooks (commission/slippage multipliers).
 - [x] Produce summary CSV/JSON artifacts for offline analysis.
- - [ ] Add PSR/DSR and block/bootstrap CIs to evaluation summary.
+ - [x] Add PSR/DSR and block/bootstrap CIs to evaluation summary.
  - [ ] Selection: implement Purged K‑Fold + embargo utilities; consider CPCV.
 
 ## Experiment Management
@@ -76,3 +77,10 @@
 - [ ] EMA (slow policy) for inference; toggle in config.
 - [ ] Optional SWA over last N checkpoints; A/B compare.
 - [ ] Snapshot/policy ensembles across seeds/epochs; re‑project to simplex.
+
+## Backlog (Later Improvements)
+- [ ] Model selection: Purged K‑Fold with embargo; evaluate CPCV when infra stabilizes.
+- [ ] Acceptance gating: require PSR/DSR thresholds for “best” model updates (configurable).
+- [ ] Hyper‑parameter sweeps (PB2/PBT) after selection metrics are in place.
+- [ ] Feature work: volatility targeting, additional indicators, PIT alignment audits.
+- [ ] Reporting: include CI bands in aggregated reports; add per‑episode significance flags.

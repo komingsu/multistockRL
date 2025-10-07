@@ -20,15 +20,19 @@ def build_dataset(config: Config):
 
 def build_environment_config(config: Config, *, max_steps_override=_NO_OVERRIDE) -> "EnvironmentConfig":
     from src.env.frictions import FrictionConfig
-    from src.env.multi_stock_env import EnvironmentConfig
+    from src.env.multi_stock_env import ActionProjectionConfig, EnvironmentConfig, SafetyConfig
 
     settings = config.environment_settings()
     if max_steps_override is not _NO_OVERRIDE:
         settings["max_steps"] = max_steps_override
     friction_payload = settings.pop("friction", {}) or {}
+    projection_payload = settings.pop("projection", {}) or {}
+    safety_payload = settings.pop("safety", {}) or {}
     settings.pop("reward", None)
     friction_cfg = FrictionConfig(**friction_payload)
-    return EnvironmentConfig(friction=friction_cfg, **settings)
+    projection_cfg = ActionProjectionConfig(**projection_payload)
+    safety_cfg = SafetyConfig(**safety_payload) if safety_payload is not None else SafetyConfig()
+    return EnvironmentConfig(friction=friction_cfg, projection=projection_cfg, safety=safety_cfg, **settings)
 
 
 def build_environment(config: Config, market_frame: Any, *, max_steps_override=_NO_OVERRIDE) -> "MultiStockTradingEnv":
@@ -70,6 +74,10 @@ def make_env_factory(config: Config, split: str, dataset: Any | None = None, *, 
         local_dataset = dataset or build_dataset(config)
         frame = local_dataset.frame_for_split(split)
         env = build_environment(config, frame, max_steps_override=max_steps_override)
+        if getattr(env.config, "time_feature_wrapper", False):
+            from src.env.wrappers import EpisodeProgressWrapper
+
+            env = EpisodeProgressWrapper(env, normalize=True)
         return Monitor(env)
 
     return _factory

@@ -9,6 +9,11 @@ Key properties
 - Normalization: VecNormalize supported and enforced for eval/inference when enabled.
 
 Quick start
+- Build data (offline using latest cached raw):
+  - `python -m scripts.build_data --offline --features`
+  - End‑to‑end (requires KIS credentials): `python -m scripts.build_data --collect --features --selection --turbulence`
+  - One‑shot (end‑to‑end with investor ratios + raw‑clean → processed):
+    - `python -m scripts.build_data --end2end --collect --env real --out-csv data/proc/daily_with_indicators.csv`
 - Train (debug): `python -m scripts.train --config configs/debug_smoke.yaml --run-name debug_weights`
 - Evaluate a checkpoint: `python -m scripts.evaluate --config <yaml> --checkpoint <run>/checkpoints/step_xxxxxx/model.pt`
 
@@ -58,10 +63,14 @@ Repository structure (annotated)
 │       ├── builders.py            # Factories to wire config->dataset/env/agent/logger
 │       ├── config.py              # Config dataclass + YAML loader
 │       └── portfolio.py           # τ limiter, integerization, payload validation
+│   ├── data/
+│   │   ├── ingest.py              # Symbol master + (optional) KIS daily collectors
+│   │   ├── feature_engineering.py # Build schema‑compatible indicators for processed CSV
+│   │   ├── selection.py           # Top‑N selection & weights (sector‑neutral scoring)
+│   │   └── turbulence.py          # Simple turbulence proxies (all vs subset)
 └── tests/                         # Pytest suites (env, portfolio, pipeline, etc.)
 ```
 
 Notes on .py files
 - Lines above include inline `#` one‑liners describing each file’s purpose.
 - For deeper interfaces and examples, see `docs/architecture.md` and `docs/environment_api.md`.
-

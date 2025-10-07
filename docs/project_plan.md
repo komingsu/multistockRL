@@ -1,5 +1,17 @@
 # Project Plan
 
+## Data Pipeline (Integration)
+- Done
+  - Add `scripts/build_data.py` for orchestrated build (collect → features → selection → turbulence).
+  - Implement `src/data/ingest.py` (FDR symbol master + optional KIS daily collectors).
+  - Implement `src/data/feature_engineering.py` to emit schema‑compatible processed CSV.
+  - Implement `src/data/selection.py` for top‑N selection and weights.
+  - Implement `src/data/turbulence.py` to export hybrid turbulence (all vs subset) as a separate CSV.
+- Next
+  - Add flows data plumbing when a provider is available; populate `prsn_*/frgn_*/orgn_*` instead of NaNs.
+  - Add unit tests for turbulence reproducibility and extreme corner cases.
+  - Wire selection outputs into evaluation reports as an optional diagnostic.
+
 ## Goal
 Build a weight‑based, multi‑asset trader on daily bars with realistic frictions (commission + slippage), τ‑limited allocation changes, integerized execution, and deterministic evaluation with patience/rollback.
 
@@ -54,6 +66,12 @@ Build a weight‑based, multi‑asset trader on daily bars with realistic fricti
 4. P2: Splits: Purged K‑Fold + embargo utilities; wire into model selection.
 5. P3: EMA/SWA toggles; inference uses EMA by default; document.
 6. P4: Feature set & vol targeting; audit PIT alignment and survivorship.
+
+## Backlog (Later)
+- Selection rigor: move from Purged K‑Fold to CPCV once infrastructure and reporting stabilize.
+- Acceptance gating: enforce PSR/DSR thresholds for best‑model updates (configurable per pipeline).
+- Hyperparameter search: PB2/PBT integrated overnight after significance metrics are in place.
+- Ensembles: snapshot/policy ensembles across seeds/epochs; ensure simplex re‑projection.
 
 
 

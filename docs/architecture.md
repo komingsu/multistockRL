@@ -19,8 +19,14 @@
 - `src/loggers/experiment.py`: run‑scoped CSV/YAML logging of metrics, configs, and events.
 
 ## Data Handling
-- Daily bars keyed by `date`, `symbol`, OHLCV, indicators.
-- Split‑aware frames feed the env directly; observations include cash, prices, and holdings features; normalization via VecNormalize is optional but recommended and enforced at eval when enabled.
+- Processed CSV at `data/proc/daily_with_indicators.csv` keyed by (`symbol`, `date`), with OHLCV, indicators, and metadata matching `src/data/schema.py`.
+- Build pipeline:
+  - `scripts/build_data.py` orchestrates raw collection (optional KIS), feature engineering, selection, and turbulence factors.
+  - `src/data/ingest.py` fetches symbol master (FDR) and optional KIS daily OHLCV.
+  - `src/data/feature_engineering.py` transforms raw → schema‑compatible indicators.
+  - `src/data/selection.py` produces top‑N selection/weights for analysis (not required by training).
+  - `src/data/turbulence.py` writes separate turbulence factors CSV (kept out of training CSV to preserve schema).
+- Split‑aware frames feed the env directly; observations include prices and optional time feature; normalization via VecNormalize is recommended and enforced at eval when enabled.
 
 ## Environment Mechanics
 - Episodes traverse the split window; start with configured `initial_cash` and zero holdings.
@@ -56,9 +62,10 @@
 - Deterministic evaluation with patience/rollback, best‑checkpoint saving, and plots on new peaks — implemented.
 - VecNormalize save/load and strict parity checks at eval/inference — implemented.
 - PPO baseline + training CLI with project epochs — implemented.
+- Data build CLI and feature engineering integrated; outputs remain backward‑compatible with the training schema.
 
 ## Outstanding Gaps
-- Projection with cash asset and optional ℓ1‑ball (short/leverage) — planned.
+- Projection with cash asset (simplex long‑only) — planned (no shorting).
 - Multi‑algo baselines (SAC/TD3/TQC/RecurrentPPO) — planned.
 - Selection/validation: Purged K‑Fold + embargo; CPCV — planned.
 - Significance metrics (PSR/DSR) and block/bootstrap CIs — planned.

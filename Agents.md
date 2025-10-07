@@ -12,7 +12,7 @@
 | --- | --- |
 | **Before** | Read the latest diary entry (e.g., `agent_diary/YYYY-MM-DD.md`) and update the plan tool. Check `git status`, confirm configs/data referenced today exist. |
 | **During** | Keep the plan in sync, rely on logging (no stray prints), validate assumptions with targeted probes, and record key design decisions in the diary. |
-| **After** | Run relevant smoke tests (`python -m pytest`, debug training), capture artefacts/plots, update project milestones, summarise outcomes in the diary, and stage/commit if stable. |
+| **After** | Run relevant smoke tests (`python -m pytest`) and always run a 2‑epoch debug train (`python -m scripts.train --config configs/debug_two_epoch.yaml --run-name <alias>`), capture artefacts/plots, update project milestones, summarise outcomes in the diary, and stage/commit if stable. |
 
 Reference: `docs/agent_checklist.md` for the detailed tick list.
 

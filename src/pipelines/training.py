@@ -35,6 +35,7 @@ from src.utils.builders import (
     make_env_factory,
 )
 from src.utils.config import Config, load_config
+from src.utils.metrics import compute_sharpe, compute_psr, compute_dsr
 
 
 def _clean_metrics(raw: Dict[str, Any]) -> Dict[str, float]:
@@ -553,6 +554,21 @@ class ProjectEvaluationCallback(BaseCallback):
             total_returns.append(ret)
         mean_total_return = float(np.mean(total_returns)) if total_returns else 0.0
 
+        # Concatenate per-step nav returns for stats
+        all_nav_returns: list[float] = []
+        for frame in trace_frames:
+            if "nav_return" in frame:
+                all_nav_returns.extend(frame["nav_return"].astype(float).tolist())
+
+        # Statistical metrics
+        sharpe = psr0 = dsr = None
+        if all_nav_returns:
+            arr = np.asarray(all_nav_returns, dtype=float)
+            sharpe = compute_sharpe(arr, annualize=True)
+            psr0 = compute_psr(arr, s_benchmark=0.0, annualize=True)
+            trials = max(1, int(self.tracker.project_epochs_completed or 1))
+            dsr = compute_dsr(arr, trials=trials, corr=0.0, annualize=True)
+
         improved = self.best_mean_reward is None or mean_reward > self.best_mean_reward + self._improvement_epsilon
 
         valuation_paths: list[Path] = []
@@ -575,6 +591,14 @@ class ProjectEvaluationCallback(BaseCallback):
             "eval_std_reward": float(std_reward),
             "valid_return": float(mean_total_return),
         }
+        if sharpe is not None:
+            payload.update(
+                {
+                    "sharpe": float(sharpe),
+                    "psr0": float(psr0 if psr0 is not None else 0.0),
+                    "dsr": float(dsr if dsr is not None else 0.0),
+                }
+            )
         payload.update(self.tracker.metrics_payload())
         payload["project_epoch"] = float(project_epoch)
         step_key = int(self.num_timesteps)
@@ -605,6 +629,32 @@ class ProjectEvaluationCallback(BaseCallback):
                     self._normalizer,
                     self.best_dir / "vecnormalize.pkl",
                 )
+            # Also export train-split traces/plots at improvement
+            try:
+                from src.utils.config import load_config as _load_cfg
+                from src.utils.builders import build_dataset as _build_ds, make_env_factory as _make
+                from stable_baselines3.common.vec_env import DummyVecEnv as _D
+                from src.pipelines.normalization import clone_vecnormalize_stats as _clone
+
+                cfg_path = self.run_dir / "config.yaml"
+                if cfg_path.exists():
+                    cfg = _load_cfg(cfg_path)
+                    ds = _build_ds(cfg)
+                    train_factory = _make(cfg, split="train", dataset=ds, max_steps_override=None)
+                    train_env = _D([train_factory])
+                    if self._normalizer is not None:
+                        train_env = _clone(self._normalizer, train_env, training=False)
+                    train_trace_frames: list[pd.DataFrame] = []
+                    def _tw(ep_index: int, traces: list[dict[str, float]], env) -> None:
+                        train_trace_frames.append(pd.DataFrame(traces))
+                    _ = evaluate_full_episodes(self.model, train_env, max(1, self.eval_episodes), deterministic=True, trace_writer=_tw)
+                    train_dir = self.run_dir / "train_traces"
+                    train_dir.mkdir(parents=True, exist_ok=True)
+                    for idx, frame in enumerate(train_trace_frames):
+                        (train_dir / f"project_epoch_{project_epoch:04d}_episode_{idx + 1}.csv").write_text(frame.to_csv(index=False))
+                    _render_valuation_curves(train_trace_frames, train_dir, file_prefix=f"project_epoch_{project_epoch:04d}_episode")
+            except Exception as e:  # pragma: no cover
+                self.experiment_logger.log_event(f"Train-split trace export failed: {e}")
 
         checkpoint_path = self._saver(
             self.model,
@@ -799,6 +849,7 @@ def run_training(
     total_timesteps: Optional[int] = None,
     eval_split: str = "validation",
     resume_path: Optional[Path] = None,
+    algo_name: Optional[str] = None,
 ) -> TrainingResult:
     dataset = build_dataset(config)
     train_split = "train"
@@ -937,7 +988,7 @@ def run_training(
     else:
         train_normalizer = None
 
-    agent_spec = build_agent_spec(config)
+    agent_spec = build_agent_spec(config, name=algo_name)
     model = agent_spec.instantiate(train_vec_env)
 
     start_timesteps = 0
@@ -1183,6 +1234,12 @@ def main() -> None:
     parser.add_argument("--run-name", type=str, default="ppo_dev", help="Run name for logging")
     parser.add_argument("--timesteps", type=int, default=None, help="Override total training timesteps")
     parser.add_argument("--resume", type=str, default=None, help="Path to model.pt checkpoint to resume from")
+    parser.add_argument(
+        "--algo",
+        type=str,
+        default=None,
+        help="Algorithm override (e.g., PPO, SAC, TD3, TQC, RecurrentPPO)",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -1191,6 +1248,7 @@ def main() -> None:
         run_name=args.run_name,
         total_timesteps=args.timesteps,
         resume_path=Path(args.resume) if args.resume else None,
+        algo_name=args.algo,
     )
 
 

@@ -109,6 +109,30 @@ environment:
     commission_rate: 0.005
     min_commission: 0.0
     slippage_bps: 50.0
+  time_feature_wrapper: true
+  projection:
+    mode: simplex
+    temperature: 1.0
+    include_cash_asset: false
+    max_leverage: 1.0
+  safety:
+    enabled: true
+    med_on: 0.95
+    med_off: 0.92
+    hi_on: 0.99
+    hi_off: 0.96
+    gmax_normal: 1.0
+    gmax_caution_high: 0.7
+    gmax_caution_low: 0.3
+    gmax_crisis: 0.1
+    per_asset_cap: 0.2
+    delta_w_caution: 0.15
+    delta_w_crisis: 0.05
+    delta_q_caution: 0.10
+    delta_q_crisis: 0.05
+    kappa: 0.2
+    cooldown_days: 3
+    buy_freeze_crisis: true
 agents:
   default: PPO
   policies:
@@ -121,6 +145,57 @@ agents:
       clip_range: 0.15
       device: cpu
       target_kl: 0.02
+    SAC:
+      policy: MlpPolicy
+      learning_rate: 0.0003
+      buffer_size: 300000
+      batch_size: 512
+      train_freq:
+      - 1
+      - step
+      gradient_steps: 1
+      tau: 0.005
+      gamma: 0.99
+      ent_coef: auto
+      learning_starts: 5000
+    TD3:
+      policy: MlpPolicy
+      learning_rate: 0.0005
+      buffer_size: 300000
+      batch_size: 512
+      train_freq:
+      - 1
+      - step
+      gradient_steps: 1
+      tau: 0.005
+      gamma: 0.99
+      policy_delay: 2
+      target_noise_clip: 0.5
+      target_policy_noise: 0.2
+      learning_starts: 5000
+    TQC:
+      policy: MlpPolicy
+      learning_rate: 0.0003
+      buffer_size: 400000
+      batch_size: 512
+      train_freq:
+      - 1
+      - step
+      gradient_steps: 1
+      tau: 0.005
+      gamma: 0.99
+      ent_coef: auto
+      learning_starts: 5000
+      top_q_fraction: 0.25
+    RecurrentPPO:
+      policy: MlpLstmPolicy
+      learning_rate: 0.0003
+      n_steps: 512
+      batch_size: 256
+      n_epochs: 1
+      gamma: 0.99
+      gae_lambda: 0.95
+      clip_range: 0.1
 logging:
   run_dir: artifacts/runs
   metrics:

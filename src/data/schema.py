@@ -81,6 +81,9 @@ def _build_schema() -> list[ColumnSpec]:
         ColumnSpec("atr_14", ("float",), True, "Average true range over 14 days.", 0.0, None),
         ColumnSpec("rv_10", ("float",), True, "Realised volatility (10 sessions).", 0.0, None),
         ColumnSpec("rv_20", ("float",), True, "Realised volatility (20 sessions).", 0.0, None),
+        # Turbulence signals (portfolio subset and system-wide)
+        ColumnSpec("turb_port", ("float",), True, "Hybrid turbulence (portfolio subset tail prob).", 0.0, 1.0),
+        ColumnSpec("turb_sys", ("float",), True, "Hybrid turbulence (system-wide tail prob).", 0.0, 1.0),
     ]
 
     ratio_columns = [
@@ -138,7 +141,8 @@ def validate_dataframe(df: pd.DataFrame, *, strict: bool = True) -> list[str]:
     errors: list[str] = []
     expected_names = {spec.name for spec in SCHEMA}
 
-    missing = [name for name in expected_names if name not in df.columns]
+    optional = {"turb_port", "turb_sys"} if not strict else set()
+    missing = [name for name in expected_names if name not in df.columns and name not in optional]
     if missing:
         errors.append(f"Missing columns: {', '.join(sorted(missing))}")
 

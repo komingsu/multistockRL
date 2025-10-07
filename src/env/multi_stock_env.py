@@ -13,7 +13,44 @@ from numpy.typing import NDArray
 
 from .costs import evaluate_transaction_costs
 from .frictions import FrictionConfig
-from ..utils.portfolio import apply_tau_limit, integerize_allocations, validate_holdings_payload
+from ..utils.portfolio import (
+    apply_tau_limit,
+    integerize_allocations,
+    project_to_l1_ball,
+    project_to_simplex,
+    validate_holdings_payload,
+)
+
+
+@dataclass(slots=True)
+class ActionProjectionConfig:
+    """Configuration for projecting raw actions onto feasible allocation weights."""
+
+    mode: str = "simplex"
+    temperature: float = 1.0
+    include_cash_asset: bool = False
+    max_leverage: float = 1.0
+
+
+@dataclass(slots=True)
+class SafetyConfig:
+    enabled: bool = True
+    med_on: float = 0.95
+    med_off: float = 0.92
+    hi_on: float = 0.99
+    hi_off: float = 0.96
+    gmax_normal: float = 1.0
+    gmax_caution_high: float = 0.7
+    gmax_caution_low: float = 0.3
+    gmax_crisis: float = 0.1
+    per_asset_cap: float = 0.2
+    delta_w_caution: float = 0.15
+    delta_w_crisis: float = 0.05
+    delta_q_caution: float = 0.10
+    delta_q_crisis: float = 0.05
+    kappa: float = 0.2
+    cooldown_days: int = 3
+    buy_freeze_crisis: bool = True
 
 
 @dataclass(slots=True)
@@ -29,8 +66,11 @@ class EnvironmentConfig:
     action_mode: str = "weights"
     tau: float = 0.1
     lambda_turnover: float = 0.02
+    time_feature_wrapper: bool = True
     max_leverage: float = 1.0
+    projection: ActionProjectionConfig = field(default_factory=ActionProjectionConfig)
     stress: Optional[dict[str, Any]] = None
+    safety: SafetyConfig = field(default_factory=SafetyConfig)
 
 
 class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
@@ -55,6 +95,15 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
         self.initial_cash = float(self.config.initial_cash)
         self._base_initial_cash = float(self.initial_cash)
 
+        # Safety setup (must be initialized before panel for turbulence cache)
+        self._safety_cfg: SafetyConfig = (
+            self.config.safety if isinstance(self.config.safety, SafetyConfig) else SafetyConfig(**(self.config.safety or {}))  # type: ignore[arg-type]
+        )
+        self._regime_state: str = "normal"
+        self._cooldown_remaining: int = 0
+        self._current_gmax: float = self._safety_cfg.gmax_normal
+        self._turb_map: dict[pd.Timestamp, tuple[float, float]] = {}
+
         self._prepare_panel()
 
         self._action_n = max(1, int(self.config.n))
@@ -71,6 +120,7 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
         self._commission_rate = float(self._friction.commission_rate)
         self.reward_scaling = float(self.config.reward_scaling)
         self.stress_profile = stress_cfg
+        # Safety setup already initialized above
 
         asset_dim = len(self.symbols)
         if asset_dim == 0:
@@ -83,11 +133,14 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
         self._lambda_turnover = max(0.0, float(self.config.lambda_turnover))
 
         if self._action_mode == "weights":
-            self.action_space = spaces.Box(
-                low=np.zeros(asset_dim, dtype=np.float32),
-                high=np.ones(asset_dim, dtype=np.float32),
-                dtype=np.float32,
-            )
+            projection_cfg = self.config.projection or ActionProjectionConfig()
+            if isinstance(projection_cfg, dict):
+                projection_cfg = ActionProjectionConfig(**projection_cfg)
+            self._projection_cfg = projection_cfg
+            self._projection_dim = asset_dim + (1 if projection_cfg.include_cash_asset else 0)
+            low = np.full(self._projection_dim, -1.0, dtype=np.float32)
+            high = np.full(self._projection_dim, 1.0, dtype=np.float32)
+            self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
         else:
             self.action_space = spaces.MultiDiscrete(
                 np.full(asset_dim, 2 * self._action_n + 1, dtype=np.int64)
@@ -201,17 +254,132 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
             action_arr = np.asarray(action, dtype=np.float64)
             if action_arr.ndim == 0:
                 action_arr = np.array([float(action_arr)], dtype=np.float64)
-            if action_arr.shape[0] != len(self.symbols):
+            if action_arr.shape[0] != self._projection_dim:
                 raise ValueError(
-                    f"Expected action dimension {len(self.symbols)}, received {action_arr.shape}"
+                    f"Expected action dimension {self._projection_dim}, received {action_arr.shape}"
                 )
-            action_arr = np.clip(action_arr, 0.0, None)
-            total = action_arr.sum()
-            if total <= 0:
-                action_arr = np.full_like(action_arr, 1.0 / len(self.symbols))
+
+            asset_logits = action_arr[: len(self.symbols)]
+            projection_mode = str(self._projection_cfg.mode).lower()
+            if projection_mode == "simplex":
+                logits_full = (
+                    action_arr
+                    if self._projection_cfg.include_cash_asset
+                    else asset_logits
+                )
+                projected = project_to_simplex(
+                    logits_full,
+                    temperature=max(1e-6, float(self._projection_cfg.temperature)),
+                )
+                if self._projection_cfg.include_cash_asset:
+                    target_asset_weights = projected[:-1]
+                    target_cash_weight = float(projected[-1])
+                else:
+                    target_asset_weights = projected
+                    target_cash_weight = max(0.0, 1.0 - float(projected.sum()))
+            elif projection_mode == "l1":
+                non_negative = np.clip(asset_logits, 0.0, None)
+                projected = project_to_l1_ball(
+                    non_negative,
+                    radius=max(1e-6, float(self._projection_cfg.max_leverage)),
+                )
+                total_mass = float(projected.sum())
+                if total_mass <= 1e-8:
+                    denom = len(self.symbols) + 1
+                    target_asset_weights = np.full(len(self.symbols), 1.0 / denom, dtype=np.float64)
+                    target_cash_weight = 1.0 / denom
+                else:
+                    target_asset_weights = projected / total_mass
+                    target_cash_weight = max(0.0, 1.0 - total_mass)
             else:
-                action_arr /= total
-            target_weights = apply_tau_limit(self.prev_weights, action_arr, self._tau)
+                raise ValueError(
+                    f"Unsupported projection mode '{self._projection_cfg.mode}'."
+                )
+
+            target_asset_weights = np.clip(target_asset_weights, 0.0, None)
+            target_cash_weight = max(0.0, float(target_cash_weight))
+            target_full = np.concatenate(
+                (target_asset_weights, np.array([target_cash_weight], dtype=np.float64))
+            )
+            total_target = float(target_full.sum())
+            if not np.isfinite(total_target) or total_target <= 0:
+                target_full = np.full(
+                    len(target_full),
+                    1.0 / len(target_full),
+                    dtype=np.float64,
+                )
+            else:
+                target_full = target_full / total_target
+
+            prev_full = np.concatenate(
+                (self.prev_weights.astype(np.float64, copy=False),
+                 np.array([self.prev_cash_fraction], dtype=np.float64))
+            )
+            limited_full = apply_tau_limit(prev_full, target_full, self._tau)
+            target_weights = limited_full[:-1]
+            target_cash_weight = float(limited_full[-1])
+
+            # Safety layer (regime-based exposure + throttles)
+            buy_freeze_hits = 0
+            weight_throttle_applied = False
+            quantity_scale = 1.0
+            q_port_val = float("nan")
+            q_sys_val = float("nan")
+            if self._safety_cfg.enabled and self._turb_map:
+                q_port_val, q_sys_val = self._turb_map.get(self.dates[self.current_idx], (float("nan"), float("nan")))
+                q_any = np.nanmax([q_port_val, q_sys_val]) if not (np.isnan(q_port_val) and np.isnan(q_sys_val)) else 0.0
+                sc = self._safety_cfg
+                # Hysteresis regime update
+                if self._regime_state == "normal":
+                    if q_any >= sc.hi_on:
+                        self._regime_state = "crisis"; self._cooldown_remaining = sc.cooldown_days
+                    elif q_any >= sc.med_on:
+                        self._regime_state = "caution"
+                elif self._regime_state == "caution":
+                    if q_any >= sc.hi_on:
+                        self._regime_state = "crisis"; self._cooldown_remaining = sc.cooldown_days
+                    elif q_any < sc.med_off:
+                        self._regime_state = "normal"
+                elif self._regime_state == "crisis":
+                    if q_any < sc.hi_off:
+                        self._regime_state = "caution"; self._cooldown_remaining = sc.cooldown_days
+                if self._regime_state == "caution" and self._cooldown_remaining > 0:
+                    self._cooldown_remaining -= 1
+                # Target gmax by regime
+                if self._regime_state == "crisis":
+                    g_target = sc.gmax_crisis
+                elif self._regime_state == "caution":
+                    if q_any <= sc.med_on:
+                        g_target = sc.gmax_caution_high
+                    elif q_any >= sc.hi_on:
+                        g_target = sc.gmax_caution_low
+                    else:
+                        ratio = (q_any - sc.med_on) / max(1e-6, (sc.hi_on - sc.med_on))
+                        g_target = sc.gmax_caution_high - ratio * (sc.gmax_caution_high - sc.gmax_caution_low)
+                else:
+                    g_target = sc.gmax_normal
+                # Ramp towards target
+                self._current_gmax = float(self._current_gmax + sc.kappa * (g_target - self._current_gmax))
+                self._current_gmax = float(np.clip(self._current_gmax, sc.gmax_crisis, sc.gmax_normal))
+                # Per-asset cap then scale to gmax
+                capped = np.minimum(target_weights, float(sc.per_asset_cap))
+                s = float(np.sum(capped))
+                if s > 1e-12:
+                    scale = min(1.0, self._current_gmax / s)
+                    capped = capped * scale
+                target_weights = capped
+                target_cash_weight = max(0.0, 1.0 - float(np.sum(target_weights)))
+                # Additional L1 throttle on weights (stronger than base tau)
+                tau_extra = sc.delta_w_crisis if self._regime_state == "crisis" else (sc.delta_w_caution if self._regime_state == "caution" else None)
+                if tau_extra is not None and tau_extra < self._tau:
+                    prev_full2 = prev_full
+                    target_full2 = np.concatenate((target_weights, np.array([target_cash_weight], dtype=np.float64)))
+                    limited2 = apply_tau_limit(prev_full2, target_full2, tau_extra)
+                    if np.any(np.abs(limited2 - target_full2) > 1e-12):
+                        weight_throttle_applied = True
+                    target_weights = limited2[:-1]
+                    target_cash_weight = float(limited2[-1])
+
             price_map = {symbol: float(price) for symbol, price in zip(self.symbols, current_prices)}
             holdings_map, _, _ = integerize_allocations(
                 {sym: w for sym, w in zip(self.symbols, target_weights)},
@@ -223,6 +391,21 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
             validate_holdings_payload(self.symbols, holdings_map)
             desired_holdings = np.array([int(holdings_map[sym]) for sym in self.symbols], dtype=np.int64)
             trade_units = desired_holdings - self.holdings
+            # Crisis buy-freeze
+            if self._safety_cfg.enabled and self._regime_state == "crisis" and self._safety_cfg.buy_freeze_crisis:
+                mask_pos = trade_units > 0
+                buy_freeze_hits = int(np.sum(mask_pos))
+                trade_units = np.where(mask_pos, 0, trade_units)
+            # Quantity throttle (L1)
+            if self._safety_cfg.enabled and np.any(trade_units != 0):
+                total_h = float(np.sum(np.abs(self.holdings)))
+                dq = self._safety_cfg.delta_q_crisis if self._regime_state == "crisis" else (self._safety_cfg.delta_q_caution if self._regime_state == "caution" else None)
+                if dq is not None:
+                    budget = float(dq) * max(1.0, total_h)
+                    l1 = float(np.sum(np.abs(trade_units)))
+                    if l1 > budget and budget > 0:
+                        quantity_scale = float(budget / l1)
+                        trade_units = np.floor(trade_units.astype(np.float64) * quantity_scale).astype(np.int64)
         else:
             action_arr = np.asarray(action, dtype=np.int64)
             if action_arr.ndim == 0:
@@ -327,6 +510,13 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
         self.prev_weights = weights_exec
         self.prev_cash_fraction = cash_fraction
         self.last_gross_value = gross_portfolio_value
+        # Persist safety/throttle diagnostics for info()
+        self.last_q_port = q_port_val if 'q_port_val' in locals() else float('nan')
+        self.last_q_sys = q_sys_val if 'q_sys_val' in locals() else float('nan')
+        self.last_weight_throttle = bool(locals().get('weight_throttle_applied', False))
+        self.last_quantity_scale = float(locals().get('quantity_scale', 1.0))
+        self.last_buy_freeze_hits = int(locals().get('buy_freeze_hits', 0))
+        self.last_cap_hit_ratio = float(locals().get('cap_hit_ratio', 0.0))
 
         self.asset_history.append(portfolio_value)
         self.date_history.append(self.dates[self.current_idx])
@@ -390,6 +580,15 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
         std = price_matrix.std(axis=0, keepdims=True)
         std = np.where(std < 1e-8, 1.0, std)
         self.normalized_prices = (price_matrix - mean) / std
+
+        # Build turbulence per-date cache if available in data
+        if "turb_port" in self.raw_data.columns or "turb_sys" in self.raw_data.columns:
+            grp_port = self.raw_data.groupby("date")["turb_port"].first() if "turb_port" in self.raw_data.columns else None
+            grp_sys = self.raw_data.groupby("date")["turb_sys"].first() if "turb_sys" in self.raw_data.columns else None
+            for d in self.dates:
+                qp = float(grp_port.loc[d]) if grp_port is not None and d in grp_port.index else float("nan")
+                qs = float(grp_sys.loc[d]) if grp_sys is not None and d in grp_sys.index else float("nan")
+                self._turb_map[d] = (qp, qs)
 
     def _observation(self) -> NDArray[np.float32]:
         prices_norm = self.normalized_prices[self.current_idx]
@@ -544,4 +743,13 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
             "weights": self.last_weights.astype(np.float32, copy=False),
             "cash_fraction": float(self.last_cash_fraction),
             "gross_value": float(self.last_gross_value),
+            # Safety/turbulence diagnostics (best effort)
+            "q_port": float(self._turb_map.get(self.dates[self.current_idx], (np.nan, np.nan))[0]) if self._turb_map else np.nan,
+            "q_sys": float(self._turb_map.get(self.dates[self.current_idx], (np.nan, np.nan))[1]) if self._turb_map else np.nan,
+            "regime": self._regime_state,
+            "g_max": float(self._current_gmax),
+            "safety_weight_throttle": bool(getattr(self, "last_weight_throttle", False)),
+            "safety_quantity_scale": float(getattr(self, "last_quantity_scale", 1.0)),
+            "buy_freeze_hits": int(getattr(self, "last_buy_freeze_hits", 0)),
+            "cap_hit_ratio": float(getattr(self, "last_cap_hit_ratio", 0.0)),
         }

@@ -21,6 +21,13 @@ from src.pipelines.normalization import (
 from src.utils.builders import build_agent_spec, build_dataset, make_env_factory
 from src.utils.config import Config
 from src.utils.portfolio import integerize_allocations, validate_holdings_payload
+from src.utils.metrics import (
+    CI,
+    compute_dsr,
+    compute_psr,
+    compute_sharpe,
+    moving_block_bootstrap_ci,
+)
 
 
 def build_trace_row(
@@ -37,6 +44,14 @@ def build_trace_row(
     drawdown: Optional[float] = None,
     weights: Optional[Sequence[float]] = None,
     cash_fraction: Optional[float] = None,
+    q_port: Optional[float] = None,
+    q_sys: Optional[float] = None,
+    regime: Optional[str] = None,
+    g_max: Optional[float] = None,
+    safety_weight_throttle: Optional[bool] = None,
+    safety_quantity_scale: Optional[float] = None,
+    buy_freeze_hits: Optional[int] = None,
+    cap_hit_ratio: Optional[float] = None,
 ) -> Dict[str, float]:
     """Construct a CSV-friendly row describing portfolio state."""
 
@@ -61,6 +76,22 @@ def build_trace_row(
             row[f"weight_{symbol}"] = float(weight)
     if cash_fraction is not None:
         row["cash_fraction"] = float(cash_fraction)
+    if q_port is not None:
+        row["q_port"] = float(q_port)
+    if q_sys is not None:
+        row["q_sys"] = float(q_sys)
+    if g_max is not None:
+        row["g_max"] = float(g_max)
+    if regime is not None:
+        row["regime"] = str(regime)
+    if safety_weight_throttle is not None:
+        row["safety_weight_throttle"] = bool(safety_weight_throttle)
+    if safety_quantity_scale is not None:
+        row["safety_quantity_scale"] = float(safety_quantity_scale)
+    if buy_freeze_hits is not None:
+        row["buy_freeze_hits"] = int(buy_freeze_hits)
+    if cap_hit_ratio is not None:
+        row["cap_hit_ratio"] = float(cap_hit_ratio)
     return row
 
 
@@ -176,6 +207,10 @@ def evaluate_full_episodes(
             drawdown=0.0,
             weights=initial_weights.tolist() if initial_weights is not None else None,
             cash_fraction=initial_cash_fraction,
+            q_port=getattr(env, "_turb_map", {}).get(env.date_history[0], (np.nan, np.nan))[0] if hasattr(env, "_turb_map") else None,
+            q_sys=getattr(env, "_turb_map", {}).get(env.date_history[0], (np.nan, np.nan))[1] if hasattr(env, "_turb_map") else None,
+            regime=getattr(env, "_regime_state", None),
+            g_max=getattr(env, "_current_gmax", None),
         )
         traces.append(initial_row)
         prev_value = env.initial_cash
@@ -226,6 +261,14 @@ def evaluate_full_episodes(
                 drawdown=drawdown,
                 weights=weights_step.tolist() if weights_step is not None else None,
                 cash_fraction=cash_fraction,
+                q_port=info.get("q_port"),
+                q_sys=info.get("q_sys"),
+                regime=info.get("regime"),
+                g_max=info.get("g_max"),
+                safety_weight_throttle=info.get("safety_weight_throttle"),
+                safety_quantity_scale=info.get("safety_quantity_scale"),
+                buy_freeze_hits=info.get("buy_freeze_hits"),
+                cap_hit_ratio=info.get("cap_hit_ratio"),
             )
             traces.append(trace_row)
             done = bool(dones[0])
@@ -299,6 +342,25 @@ def _render_valuation_curves(
 
         fig, ax = plt.subplots(figsize=(8, 4.5))
         ax.plot(data["date"], data["portfolio_value"], label="NAV", color="#1f77b4")
+        # Annotate turbulence & throttling
+        if "q_sys" in data.columns:
+            try:
+                ax2 = ax.twinx()
+                ax2.plot(data["date"], data["q_sys"], color="#ff7f0e", alpha=0.4, label="turb_sys")
+                ax2.set_ylim(0.0, 1.05)
+                ax2.set_ylabel("turbulence")
+            except Exception:
+                pass
+        # Highlight throttling days
+        if "buy_freeze_hits" in data.columns or "safety_quantity_scale" in data.columns:
+            for i, row in data.iterrows():
+                mark = False
+                if "buy_freeze_hits" in data.columns and float(row.get("buy_freeze_hits", 0)) > 0:
+                    mark = True
+                if "safety_quantity_scale" in data.columns and float(row.get("safety_quantity_scale", 1.0)) < 0.999:
+                    mark = True
+                if mark:
+                    ax.axvline(pd.to_datetime(row["date"]), color="#d62728", alpha=0.15, linestyle=":")
 
         peak_row = data["portfolio_value"].idxmax()
         if peak_row is not None and not pd.isna(peak_row):
@@ -452,6 +514,7 @@ def run_evaluation(
     total_returns: List[float] = []
     max_drawdowns: List[float] = []
     avg_turnovers: List[float] = []
+    all_nav_returns: List[float] = []
 
     for idx, frame in enumerate(trace_frames):
         start_value = float(frame["portfolio_value"].iloc[0]) if not frame.empty else 0.0
@@ -475,6 +538,10 @@ def run_evaluation(
                 "position_json": str(position_path) if position_path is not None else "",
             }
         )
+        if "nav_return" in frame:
+            nav_ret = frame["nav_return"].astype(float).to_numpy()
+            # First row is initial (0); include all to preserve length
+            all_nav_returns.extend(nav_ret.tolist())
 
     episode_summaries = pd.DataFrame(episode_records)
 
@@ -494,6 +561,27 @@ def run_evaluation(
                 "mean_max_drawdown": float(np.mean(max_drawdowns)),
                 "max_drawdown": float(np.max(max_drawdowns)),
                 "mean_turnover": float(np.mean(avg_turnovers)),
+            }
+        )
+
+    # Statistical reporting (Sharpe, PSR/DSR, bootstrap CIs)
+    if all_nav_returns:
+        arr = np.asarray(all_nav_returns, dtype=float)
+        sharpe = compute_sharpe(arr, annualize=True, periods=252)
+        psr0 = compute_psr(arr, s_benchmark=0.0, annualize=True, periods=252)
+        # Trials default: number of episodes as a conservative proxy (can be overridden in training integration)
+        dsr = compute_dsr(arr, trials=max(1, int(episodes)), corr=0.0, annualize=True, periods=252)
+        sr_ci = moving_block_bootstrap_ci(arr, stat_fn=lambda x: compute_sharpe(x, annualize=True), block_len=5, reps=400, alpha=0.05, random_state=123)
+        tr_ci = moving_block_bootstrap_ci(arr, stat_fn=lambda x: float(np.nanmean(x)), block_len=5, reps=400, alpha=0.05, random_state=321)
+        summary.update(
+            {
+                "sharpe": float(sharpe),
+                "psr0": float(psr0),
+                "dsr": float(dsr),
+                "sharpe_ci_low": float(sr_ci.low),
+                "sharpe_ci_high": float(sr_ci.high),
+                "mean_return_ci_low": float(tr_ci.low),
+                "mean_return_ci_high": float(tr_ci.high),
             }
         )
 

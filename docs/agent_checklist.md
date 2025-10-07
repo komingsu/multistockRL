@@ -14,6 +14,7 @@
 
 ## After Work Session
 - [ ] Run smoke tests or validation scripts relevant to touched modules.
+- [ ] Execute debug two-epoch training run (`python -m scripts.train --config configs/debug_two_epoch.yaml --run-name <alias>`) to ensure end-to-end behaviour remains stable.
 - [ ] Capture metrics snapshots or plots produced.
 - [ ] Update project checklist item statuses.
 - [ ] Write a diary summary with outcomes and next steps.
