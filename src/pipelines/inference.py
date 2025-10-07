@@ -36,6 +36,8 @@ def run_inference(
     output_dir: Optional[Path] = None,
     stress_overrides: Optional[Dict[str, Any]] = None,
     render_valuation: bool = True,
+    integerize: bool = False,
+    lot_size: int = 1,
 ) -> EvaluationResult:
     """Execute deterministic inference runs with optional state overrides."""
 
@@ -49,6 +51,8 @@ def run_inference(
         stress_overrides=stress_overrides,
         portfolio_state=portfolio_state,
         render_nav_curves=render_valuation,
+        integerize=integerize,
+        lot_size=lot_size,
     )
 
 
@@ -60,6 +64,10 @@ def _format_summary(result: EvaluationResult) -> str:
     if result.trace_paths:
         lines.append("Trace files:")
         for path in result.trace_paths:
+            lines.append(f"  - {path}")
+    if result.position_paths:
+        lines.append("Position files:")
+        for path in result.position_paths:
             lines.append(f"  - {path}")
     if result.valuation_paths:
         lines.append("Valuation charts:")
@@ -120,6 +128,17 @@ def main() -> None:
         action="store_true",
         help="Skip valuation chart rendering (enabled by default).",
     )
+    parser.add_argument(
+        "--integerize",
+        action="store_true",
+        help="Integerize allocation weights to integer share counts before applying overrides.",
+    )
+    parser.add_argument(
+        "--lot-size",
+        type=int,
+        default=1,
+        help="Lot size used when integerizing allocations (default: 1).",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -141,6 +160,8 @@ def main() -> None:
         output_dir=output_dir,
         stress_overrides=stress_overrides,
         render_valuation=not args.no_plots,
+        integerize=args.integerize,
+        lot_size=max(1, int(args.lot_size)),
     )
 
     print(_format_summary(result))

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import math
 import time
 from dataclasses import dataclass
@@ -13,13 +14,19 @@ from typing import Any, Dict, Optional
 import numpy as np
 import pandas as pd
 from stable_baselines3.common.callbacks import BaseCallback, CallbackList
-from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from src.pipelines.checkpointing import load_checkpoint, save_checkpoint
 from src.pipelines.evaluation import (
     _render_valuation_curves,
     build_trace_row,
     evaluate_full_episodes,
+)
+from src.pipelines.normalization import (
+    clone_vecnormalize_stats,
+    maybe_wrap_vecnormalize,
+    save_vecnormalize_stats,
+    stats_path_for_checkpoint,
 )
 from src.utils.builders import (
     build_agent_spec,
@@ -247,44 +254,50 @@ class EpisodeRewardLogger(BaseCallback):
         self.summary_state = summary_state
         self.tracker = tracker
         self._logged_steps: set[int] = set()
+        self._episode_reward_cumsum: float = 0.0
 
     def _on_step(self) -> bool:
         infos = self.locals.get("infos", [])
         for info in infos:
-            if not info or not info.get("episode_final"):
+            if not info:
                 continue
-            reward_value = float(info.get("final_reward", 0.0))
-            step_key = int(self.num_timesteps)
-            if step_key in self._logged_steps:
-                continue
-            self._logged_steps.add(step_key)
-            self.summary_state["last_train_reward"] = reward_value
-            self.experiment_logger.log_metrics(step_key, {self.tag: reward_value})
-            self.experiment_logger.log_event(
-                f"Episode completed with {self.tag}={reward_value:.4f} at step {step_key}"
-            )
-            if self.tracker is not None:
-                nav_candidates = (
-                    info.get("nav"),
-                    info.get("final_portfolio_value"),
-                    info.get("portfolio_value"),
+            reward = info.get("reward")
+            if reward is not None:
+                self._episode_reward_cumsum += float(reward)
+            if info.get("episode_final"):
+                step_key = int(self.num_timesteps)
+                if step_key in self._logged_steps:
+                    self._episode_reward_cumsum = 0.0
+                    continue
+                self._logged_steps.add(step_key)
+                final_reward = float(self._episode_reward_cumsum)
+                self.summary_state["last_train_reward"] = final_reward
+                self.experiment_logger.log_metrics(step_key, {self.tag: final_reward})
+                self.experiment_logger.log_event(
+                    f"Episode completed with {self.tag}={final_reward:.4f} at step {step_key}"
                 )
-                nav_value = next(
-                    (float(candidate) for candidate in nav_candidates if candidate is not None),
-                    None,
-                )
-                turnover_value = info.get("turnover")
-                drawdown_value = info.get("drawdown", info.get("max_drawdown"))
-                if turnover_value is not None:
-                    try:
-                        turnover_value = float(turnover_value)
-                    except (TypeError, ValueError):
-                        turnover_value = None
-                if drawdown_value is not None:
-                    try:
-                        drawdown_value = float(drawdown_value)
-                    except (TypeError, ValueError):
-                        drawdown_value = None
+                if self.tracker is not None:
+                    nav_candidates = (
+                        info.get("nav"),
+                        info.get("final_portfolio_value"),
+                        info.get("portfolio_value"),
+                    )
+                    nav_value = next(
+                        (float(candidate) for candidate in nav_candidates if candidate is not None),
+                        None,
+                    )
+                    turnover_value = info.get("turnover")
+                    drawdown_value = info.get("drawdown", info.get("max_drawdown"))
+                    if turnover_value is not None:
+                        try:
+                            turnover_value = float(turnover_value)
+                        except (TypeError, ValueError):
+                            turnover_value = None
+                    if drawdown_value is not None:
+                        try:
+                            drawdown_value = float(drawdown_value)
+                        except (TypeError, ValueError):
+                            drawdown_value = None
                 self.tracker.register_episode(
                     nav=nav_value,
                     turnover=turnover_value,
@@ -295,6 +308,11 @@ class EpisodeRewardLogger(BaseCallback):
                 self.summary_state["episodes_completed"] = (
                     self.summary_state.get("episodes_completed", 0) + 1
                 )
+            self._episode_reward_cumsum = 0.0
+        return True
+
+    def _on_rollout_start(self) -> None:
+        self._episode_reward_cumsum = 0.0
         return True
 
 
@@ -457,6 +475,10 @@ class ProjectEvaluationCallback(BaseCallback):
         summary_state: Dict[str, Any],
         run_dir: Path,
         saver,
+        normalizer: Optional[VecNormalize] = None,
+        patience: Optional[int] = None,
+        rollback_patience: Optional[int] = None,
+        early_stop_patience: Optional[int] = None,
     ) -> None:
         super().__init__()
         self.eval_env = eval_env
@@ -472,6 +494,21 @@ class ProjectEvaluationCallback(BaseCallback):
         self.best_model_path: Optional[Path] = None
         self.latest_result: Optional[Dict[str, float]] = None
         self._saver = saver
+        self._normalizer = normalizer if isinstance(normalizer, VecNormalize) else None
+        self._improvement_epsilon = 1e-8
+        self.patience = patience if patience and patience > 0 else None
+        self.rollback_patience = rollback_patience if rollback_patience and rollback_patience > 0 else None
+        self.early_stop_patience = early_stop_patience if early_stop_patience and early_stop_patience > 0 else None
+        if self.rollback_patience is None and self.early_stop_patience is not None:
+            self.rollback_patience = self.early_stop_patience
+        if self.early_stop_patience is None and self.rollback_patience is not None:
+            self.early_stop_patience = self.rollback_patience
+        self.epochs_since_improvement = 0
+        self.epochs_since_improvement_post = 0
+        self.rollback_triggered = False
+        self.best_checkpoint_path: Optional[Path] = None
+        self.best_normalizer_state: Optional[tuple] = None
+        self.stop_reason: Optional[str] = None
 
     def _on_step(self) -> bool:
         while True:
@@ -481,15 +518,19 @@ class ProjectEvaluationCallback(BaseCallback):
             self._run_evaluation(epoch_index)
         return True
 
+
     def _run_evaluation(self, project_epoch: int) -> None:
         trace_dir = self.run_dir / "validation_traces"
-        trace_dir.mkdir(parents=True, exist_ok=True)
         trace_frames: list[pd.DataFrame] = []
 
+        if self._normalizer is not None and isinstance(self.eval_env, VecNormalize):
+            self.eval_env.obs_rms = copy.deepcopy(self._normalizer.obs_rms)
+            self.eval_env.ret_rms = copy.deepcopy(self._normalizer.ret_rms)
+            self.eval_env.training = False
+            self.eval_env.norm_reward = False
+
         def trace_writer(ep_index: int, traces: list[dict[str, float]], env) -> None:
-            file_path = trace_dir / f"project_epoch_{project_epoch:04d}_episode_{ep_index + 1}.csv"
             frame = pd.DataFrame(traces)
-            frame.to_csv(file_path, index=False)
             trace_frames.append(frame)
 
         rewards = evaluate_full_episodes(
@@ -500,31 +541,51 @@ class ProjectEvaluationCallback(BaseCallback):
             trace_writer=trace_writer,
         )
 
+        mean_reward = float(rewards.mean()) if rewards.size else 0.0
+        std_reward = float(rewards.std()) if rewards.size else 0.0
+        total_returns: list[float] = []
+        for frame in trace_frames:
+            if frame.empty:
+                continue
+            start_value = float(frame["portfolio_value"].iloc[0])
+            end_value = float(frame["portfolio_value"].iloc[-1])
+            ret = (end_value - start_value) / start_value if start_value else 0.0
+            total_returns.append(ret)
+        mean_total_return = float(np.mean(total_returns)) if total_returns else 0.0
+
+        improved = self.best_mean_reward is None or mean_reward > self.best_mean_reward + self._improvement_epsilon
+
         valuation_paths: list[Path] = []
-        if trace_frames:
+        if improved and trace_frames:
+            trace_dir.mkdir(parents=True, exist_ok=True)
+            for idx, frame in enumerate(trace_frames):
+                file_path = trace_dir / f"project_epoch_{project_epoch:04d}_episode_{idx + 1}.csv"
+                frame.to_csv(file_path, index=False)
             valuation_paths = _render_valuation_curves(
                 trace_frames,
                 trace_dir,
                 file_prefix=f"project_epoch_{project_epoch:04d}_episode",
             )
 
-        mean_reward = float(rewards.mean()) if rewards.size else 0.0
-        std_reward = float(rewards.std()) if rewards.size else 0.0
+        self._update_counters(improved, mean_reward, project_epoch)
+
         payload = {
             "project_epoch": float(project_epoch),
             "valid_reward": float(mean_reward),
             "eval_std_reward": float(std_reward),
+            "valid_return": float(mean_total_return),
         }
         payload.update(self.tracker.metrics_payload())
         payload["project_epoch"] = float(project_epoch)
         step_key = int(self.num_timesteps)
         self.latest_result = payload
         self.summary_state["last_valid_reward"] = float(mean_reward)
+        self.summary_state["last_valid_return"] = float(mean_total_return)
         self.summary_state["last_eval_epoch"] = project_epoch
         self.summary_state.update(self.tracker.summary_payload())
         self.experiment_logger.log_metrics(step_key, payload)
         self.experiment_logger.log_event(
-            f"Validation @ project epoch {project_epoch}: reward={mean_reward:.4f}, std={std_reward:.4f}"
+            f"Validation @ project epoch {project_epoch}: reward={mean_reward:.4f}, std={std_reward:.4f}, return={mean_total_return:.4f}"
         )
         if valuation_paths:
             for plot_path in valuation_paths:
@@ -532,15 +593,18 @@ class ProjectEvaluationCallback(BaseCallback):
                     f"Saved evaluation valuation plot -> {plot_path.name}"
                 )
 
-        is_best = self.best_mean_reward is None or mean_reward > self.best_mean_reward
-        if is_best and self.best_dir is not None:
-            self.best_mean_reward = mean_reward
+        if improved and self.best_dir is not None:
             best_path = self.best_dir / f"best_model_epoch_{project_epoch}.zip"
             self.model.save(str(best_path))
             self.best_model_path = best_path
             self.experiment_logger.log_event(
                 f"New best model saved at {best_path.name} (reward {mean_reward:.4f})"
             )
+            if self._normalizer is not None:
+                save_vecnormalize_stats(
+                    self._normalizer,
+                    self.best_dir / "vecnormalize.pkl",
+                )
 
         checkpoint_path = self._saver(
             self.model,
@@ -551,6 +615,85 @@ class ProjectEvaluationCallback(BaseCallback):
         self.experiment_logger.log_event(
             f"Evaluation checkpoint saved -> {rel_checkpoint}"
         )
+
+        if improved:
+            self.best_checkpoint_path = checkpoint_path
+
+
+    def _update_counters(self, improved: bool, mean_reward: float, project_epoch: int) -> None:
+        if improved:
+            self.best_mean_reward = mean_reward
+            self.epochs_since_improvement = 0
+            self.epochs_since_improvement_post = 0
+            self.rollback_triggered = False
+            if self._normalizer is not None:
+                self.best_normalizer_state = (
+                    copy.deepcopy(self._normalizer.obs_rms),
+                    copy.deepcopy(self._normalizer.ret_rms),
+                    self._normalizer.norm_reward,
+                )
+            return
+
+        self.epochs_since_improvement += 1
+        if self.rollback_triggered:
+            self.epochs_since_improvement_post += 1
+
+        if (
+            not self.rollback_triggered
+            and self.patience is not None
+            and self.epochs_since_improvement >= self.patience
+        ):
+            if self._rollback_to_best(project_epoch):
+                self.rollback_triggered = True
+                self.epochs_since_improvement = 0
+                self.epochs_since_improvement_post = 0
+
+        if (
+            self.rollback_triggered
+            and self.rollback_patience is not None
+            and self.epochs_since_improvement_post >= self.rollback_patience
+        ):
+            self._trigger_early_stop(project_epoch, "rollback_patience_exceeded")
+
+        if (
+            self.early_stop_patience is not None
+            and self.epochs_since_improvement >= self.early_stop_patience
+        ):
+            self._trigger_early_stop(project_epoch, "early_stop_patience_exceeded")
+
+
+    def _rollback_to_best(self, project_epoch: int) -> bool:
+        if self.best_checkpoint_path is None or not self.best_checkpoint_path.exists():
+            self.experiment_logger.log_event(
+                "Rollback requested but no best checkpoint available; skipping."
+            )
+            return False
+
+        load_checkpoint(self.model, self.best_checkpoint_path)
+        if self._normalizer is not None and self.best_normalizer_state is not None:
+            obs_rms, ret_rms, norm_reward = self.best_normalizer_state
+            self._normalizer.obs_rms = copy.deepcopy(obs_rms)
+            self._normalizer.ret_rms = copy.deepcopy(ret_rms)
+            self._normalizer.training = True
+            self._normalizer.norm_reward = norm_reward
+
+        self.experiment_logger.log_event(
+            f"Rolled back to best checkpoint at epoch {project_epoch} (reward {self.best_mean_reward:.4f})"
+        )
+        self.summary_state["rolled_back_at"] = project_epoch
+        return True
+
+
+    def _trigger_early_stop(self, project_epoch: int, reason: str) -> None:
+        if self.stop_reason is not None:
+            return
+        self.stop_reason = reason
+        self.model.stop_training = True
+        self.experiment_logger.log_event(
+            f"Early stopping triggered at epoch {project_epoch} (reason: {reason})."
+        )
+        self.summary_state["early_stop_epoch"] = project_epoch
+        self.summary_state["early_stop_reason"] = reason
 
 
 def _resolve_updates_per_step(train_freq: Any, gradient_steps: Any) -> Optional[float]:
@@ -783,6 +926,16 @@ def run_training(
 
     env_factory = make_env_factory(config, split=train_split, dataset=dataset)
     train_vec_env = DummyVecEnv([env_factory])
+    vecnormalize_cfg = training_cfg.get("vecnormalize")
+    train_vec_env, train_normalizer = maybe_wrap_vecnormalize(
+        train_vec_env,
+        vecnormalize_cfg,
+        training=True,
+    )
+    if isinstance(train_normalizer, VecNormalize):
+        train_normalizer.training = True
+    else:
+        train_normalizer = None
 
     agent_spec = build_agent_spec(config)
     model = agent_spec.instantiate(train_vec_env)
@@ -832,7 +985,17 @@ def run_training(
         summary_state["last_checkpoint"] = current_timesteps
         if project_epoch is not None:
             summary_state["last_checkpoint_project_epoch"] = project_epoch
-        return save_checkpoint(model_ref, config, checkpoint_dir, current_timesteps, summary_state)
+        checkpoint_path = save_checkpoint(
+            model_ref,
+            config,
+            checkpoint_dir,
+            current_timesteps,
+            summary_state,
+        )
+        if train_normalizer is not None:
+            stats_path = stats_path_for_checkpoint(checkpoint_path)
+            save_vecnormalize_stats(train_normalizer, stats_path)
+        return checkpoint_path
 
     callbacks: list[BaseCallback] = [
         EpisodeRewardLogger(
@@ -874,6 +1037,12 @@ def run_training(
             max_steps_override=None,
         )
         eval_vec_env = DummyVecEnv([eval_factory])
+        if train_normalizer is not None:
+            eval_vec_env = clone_vecnormalize_stats(
+                train_normalizer,
+                eval_vec_env,
+                training=False,
+            )
         best_dir = checkpoint_dir / "best"
         eval_callback = ProjectEvaluationCallback(
             eval_vec_env,
@@ -884,6 +1053,10 @@ def run_training(
             summary_state=summary_state,
             run_dir=run_dir,
             saver=saver,
+            normalizer=train_normalizer,
+            patience=training_cfg.get("patience"),
+            rollback_patience=training_cfg.get("rollback_patience"),
+            early_stop_patience=training_cfg.get("early_stop_patience"),
         )
         callbacks.append(eval_callback)
 
@@ -891,6 +1064,9 @@ def run_training(
     callback_chain = callbacks[0] if len(callbacks) == 1 else CallbackList(callbacks)
 
     model.learn(total_timesteps=timesteps, callback=callback_chain, progress_bar=False)
+
+    if eval_callback is not None and getattr(eval_callback, "stop_reason", None):
+        summary_state["early_stop_reason"] = eval_callback.stop_reason
 
     tracker.record_step(int(model.num_timesteps), updates_applied=getattr(model, "_n_updates", None))
     summary_state.update(tracker.summary_payload())
@@ -900,10 +1076,14 @@ def run_training(
     if eval_vec_env is not None:
         final_trace_dir = run_dir / "final_eval_traces"
 
+        final_trace_frames: list[pd.DataFrame] = []
+
         def trace_writer(ep_index: int, traces: list[dict[str, float]], env) -> None:
             final_trace_dir.mkdir(parents=True, exist_ok=True)
             file_path = final_trace_dir / f"episode_{ep_index + 1:02d}.csv"
-            pd.DataFrame(traces).to_csv(file_path, index=False)
+            frame = pd.DataFrame(traces)
+            frame.to_csv(file_path, index=False)
+            final_trace_frames.append(frame)
 
         final_rewards = evaluate_full_episodes(
             model,
@@ -914,10 +1094,20 @@ def run_training(
         )
         eval_mean = float(final_rewards.mean()) if final_rewards.size else 0.0
         eval_std = float(final_rewards.std()) if final_rewards.size else 0.0
+        final_returns = []
+        for frame in final_trace_frames:
+            if frame.empty:
+                continue
+            start_value = float(frame["portfolio_value"].iloc[0])
+            end_value = float(frame["portfolio_value"].iloc[-1])
+            ret = (end_value - start_value) / start_value if start_value else 0.0
+            final_returns.append(ret)
+        mean_final_return = float(np.mean(final_returns)) if final_returns else 0.0
         final_payload = {
             "project_epoch": float(tracker.project_epochs_completed),
             "valid_reward": float(eval_mean),
             "eval_std_reward": float(eval_std),
+            "valid_return": float(mean_final_return),
         }
         final_payload.update(tracker.metrics_payload())
         final_payload["project_epoch"] = float(tracker.project_epochs_completed)
@@ -926,7 +1116,7 @@ def run_training(
             final_payload,
         )
         logger.log_event(
-            f"Final validation reward={eval_mean:.4f}, std={eval_std:.4f}"
+            f"Final validation reward={eval_mean:.4f}, std={eval_std:.4f}, return={mean_final_return:.4f}"
         )
         summary_state["last_valid_reward"] = float(eval_mean)
         if eval_callback and eval_callback.best_model_path is not None:

@@ -1,0 +1,64 @@
+[2025-10-07 02:51:31] alias=weights_debug_smoke_cpu
+[2025-10-07 02:51:31] Config snapshot written to config.yaml
+[2025-10-07 02:51:32] Initialising training for weights_debug_smoke_cpu: algorithm=PPO, total_timesteps=2048, project_epoch_unit=steps, project_epoch_value=600.0, planned_project_epochs=4
+[2025-10-07 02:51:32] Algorithm metadata -> algorithm=PPO, n_steps=128
+[2025-10-07 02:51:33] Episode completed with train_reward=-0.0113 at step 600
+[2025-10-07 02:51:33] Project epoch 1 recorded at step 600 (train_reward=-0.0113, total_env_steps=600.0000, episodes_completed=1.0000)
+[2025-10-07 02:51:33] Checkpoint saved at project epoch 1 (step 600)
+[2025-10-07 02:51:34] Validation @ project epoch 1: reward=316523431.1200, std=0.0000
+[2025-10-07 02:51:34] Saved evaluation valuation plot -> project_epoch_0001_episode_01_valuation.png
+[2025-10-07 02:51:34] New best model saved at best_model_epoch_1.zip (reward 316523431.1200)
+[2025-10-07 02:51:34] Evaluation checkpoint saved -> checkpoints/step_000600/model.pt
+[2025-10-07 02:51:34] Episode completed with train_reward=-0.0128 at step 1200
+[2025-10-07 02:51:34] Project epoch 2 recorded at step 1200 (train_reward=-0.0128, valid_reward=316523431.1200, total_env_steps=1200.0000, episodes_completed=2.0000)
+[2025-10-07 02:51:35] Checkpoint saved at project epoch 2 (step 1200)
+[2025-10-07 02:51:35] Validation @ project epoch 2: reward=530127600.5900, std=0.0000
+[2025-10-07 02:51:35] Saved evaluation valuation plot -> project_epoch_0002_episode_01_valuation.png
+[2025-10-07 02:51:35] New best model saved at best_model_epoch_2.zip (reward 530127600.5900)
+[2025-10-07 02:51:35] Evaluation checkpoint saved -> checkpoints/step_001200/model.pt
+[2025-10-07 02:51:36] Episode completed with train_reward=-0.0091 at step 1800
+[2025-10-07 02:51:36] Project epoch 3 recorded at step 1800 (train_reward=-0.0091, valid_reward=530127600.5900, total_env_steps=1800.0000, episodes_completed=3.0000)
+[2025-10-07 02:51:36] Checkpoint saved at project epoch 3 (step 1800)
+[2025-10-07 02:51:36] Validation @ project epoch 3: reward=-125968098.0700, std=0.0000
+[2025-10-07 02:51:36] Saved evaluation valuation plot -> project_epoch_0003_episode_01_valuation.png
+[2025-10-07 02:51:36] Evaluation checkpoint saved -> checkpoints/step_001800/model.pt
+[2025-10-07 02:51:36] Final validation reward=335837476.7900, std=0.0000
+[2025-10-07 02:51:37] Performance summary:
+[2025-10-07 02:51:37] alias=weights_debug_smoke_cpu
+[2025-10-07 02:51:37] start_timesteps=0
+[2025-10-07 02:51:37] episode_steps=600
+[2025-10-07 02:51:37] planned_epochs=4
+[2025-10-07 02:51:37] project_epoch_unit=steps
+[2025-10-07 02:51:37] project_epoch_value=600.0
+[2025-10-07 02:51:37] planned_project_epochs=4
+[2025-10-07 02:51:37] planned_timesteps=2048
+[2025-10-07 02:51:37] log_interval_project_epochs=1
+[2025-10-07 02:51:37] eval_interval_project_epochs=1
+[2025-10-07 02:51:37] checkpoint_interval_project_epochs=1
+[2025-10-07 02:51:37] project_epochs_completed=3
+[2025-10-07 02:51:37] total_env_steps=2048
+[2025-10-07 02:51:37] episodes_completed=3
+[2025-10-07 02:51:37] updates_applied=160
+[2025-10-07 02:51:37] wall_time=4.026919238000119
+[2025-10-07 02:51:37] algorithm=PPO
+[2025-10-07 02:51:37] n_steps=128
+[2025-10-07 02:51:37] policy=MlpPolicy
+[2025-10-07 02:51:37] last_train_reward=-0.009080672795371843
+[2025-10-07 02:51:37] nav=7381362409.070001
+[2025-10-07 02:51:37] turnover=0.20421432380099486
+[2025-10-07 02:51:37] drawdown=0.3155412955041691
+[2025-10-07 02:51:37] last_checkpoint_project_epoch=3
+[2025-10-07 02:51:37] last_checkpoint=2048
+[2025-10-07 02:51:37] last_valid_reward=335837476.7900009
+[2025-10-07 02:51:37] last_eval_epoch=3
+[2025-10-07 02:51:37] run_completed=True
+[2025-10-07 02:51:37] train_timesteps=2048
+[2025-10-07 02:51:37] train_epochs=4
+[2025-10-07 02:51:37] train_timesteps_overrun=0
+[2025-10-07 02:51:37] train_epochs_overrun=0
+[2025-10-07 02:51:37] train_reward=-0.009080672795371843
+[2025-10-07 02:51:37] valid_reward=335837476.7900009
+[2025-10-07 02:51:37] eval_std_reward=0.0
+[2025-10-07 02:51:37] final_checkpoint=artifacts/debug_runs/20251007-025131_weights_debug_smoke_cpu/checkpoints/step_002048/model.pt
+[2025-10-07 02:51:37] date=2025-10-07
+[2025-10-07 02:51:37] Training complete

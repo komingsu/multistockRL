@@ -1,0 +1,4 @@
+# file: /mnt/c/Users/rh987/OneDrive/document/GitHub/multistockRL/src/data/transforms.py
+# hypothesis_version: 6.140.3
+
+[0.0, 'LagSpec', 'apply_lag_features', 'delta', 'ignore', 'log_return', 'pct_change', 'raw']

@@ -11,7 +11,9 @@ import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
 
-from .frictions import FrictionConfig, compute_commission, compute_slippage
+from .costs import evaluate_transaction_costs
+from .frictions import FrictionConfig
+from ..utils.portfolio import apply_tau_limit, integerize_allocations, validate_holdings_payload
 
 
 @dataclass(slots=True)
@@ -24,11 +26,14 @@ class EnvironmentConfig:
     reward_scaling: float = 1.0
     friction: FrictionConfig = field(default_factory=FrictionConfig)
     risk_free_rate: float = 0.0
+    action_mode: str = "weights"
+    tau: float = 0.1
+    lambda_turnover: float = 0.02
     max_leverage: float = 1.0
     stress: Optional[dict[str, Any]] = None
 
 
-class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
+class MultiStockTradingEnv(gym.Env[NDArray[np.float32], np.ndarray]):
     """Trading environment with discrete buy/hold/sell actions per stock."""
 
     metadata = {"render_modes": ["human"], "render_fps": 1}
@@ -71,9 +76,22 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
         if asset_dim == 0:
             raise ValueError("Environment requires at least one tradable symbol")
 
-        self.action_space = spaces.MultiDiscrete(
-            np.full(asset_dim, 2 * self._action_n + 1, dtype=np.int64)
-        )
+        self._action_mode = str(self.config.action_mode).lower()
+        if self._action_mode not in {"weights", "shares"}:
+            raise ValueError("action_mode must be either 'weights' or 'shares'")
+        self._tau = max(0.0, float(self.config.tau))
+        self._lambda_turnover = max(0.0, float(self.config.lambda_turnover))
+
+        if self._action_mode == "weights":
+            self.action_space = spaces.Box(
+                low=np.zeros(asset_dim, dtype=np.float32),
+                high=np.ones(asset_dim, dtype=np.float32),
+                dtype=np.float32,
+            )
+        else:
+            self.action_space = spaces.MultiDiscrete(
+                np.full(asset_dim, 2 * self._action_n + 1, dtype=np.int64)
+            )
 
         obs_dim = 1 + 2 * asset_dim  # cash + prices + holdings
         high = np.full(obs_dim, np.finfo(np.float32).max, dtype=np.float32)
@@ -120,11 +138,26 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
         self.peak_value = self.initial_cash
         self.last_turnover = 0.0
         self.last_nav_return = 0.0
+        self.last_log_return = 0.0
         self.last_drawdown = 0.0
         self.last_commission_cost = 0.0
         self.last_slippage_cost = 0.0
         self.last_cost_ratio = 0.0
         self.last_returns = np.zeros(len(self.symbols), dtype=np.float64)
+        current_prices = self.price_matrix[self.current_idx]
+        invested_value = float(np.dot(self.holdings, current_prices))
+        portfolio_value = self.cash + invested_value
+        if portfolio_value > 0.0:
+            weights = (self.holdings * current_prices) / portfolio_value
+            cash_fraction = self.cash / portfolio_value
+        else:
+            weights = np.zeros(len(self.symbols), dtype=np.float64)
+            cash_fraction = 0.0
+        self.last_weights = weights
+        self.last_cash_fraction = cash_fraction
+        self.prev_weights = weights.copy()
+        self.prev_cash_fraction = cash_fraction
+        self.last_gross_value = portfolio_value
 
         portfolio_state: Optional[Dict[str, Any]] = None
         if self._pending_portfolio_state is not None:
@@ -152,7 +185,7 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
             self._pending_portfolio_state = dict(portfolio_state)
 
     def step(
-        self, action: NDArray[np.int64]
+        self, action: np.ndarray | NDArray[np.float64]
     ) -> tuple[NDArray[np.float32], float, bool, bool, Dict[str, Any]]:
         if self.terminal or self.steps_elapsed >= self.max_trade_steps:
             self.terminal = True
@@ -161,17 +194,44 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
             info["final_reward"] = info["reward_unscaled"]
             info["final_portfolio_value"] = info["portfolio_value"]
             return self._observation(), 0.0, True, False, info
-
-        action_arr = np.asarray(action, dtype=np.int64)
-        if action_arr.ndim == 0:
-            action_arr = np.array([action_arr], dtype=np.int64)
-        if action_arr.shape[0] != len(self.symbols):
-            raise ValueError(
-                f"Expected action dimension {len(self.symbols)}, received {action_arr.shape}"
-            )
-
-        trade_units = action_arr - self._action_n
         current_prices = self.price_matrix[self.current_idx]
+        nav_before = self.cash + float(np.dot(self.holdings, current_prices))
+
+        if self._action_mode == "weights":
+            action_arr = np.asarray(action, dtype=np.float64)
+            if action_arr.ndim == 0:
+                action_arr = np.array([float(action_arr)], dtype=np.float64)
+            if action_arr.shape[0] != len(self.symbols):
+                raise ValueError(
+                    f"Expected action dimension {len(self.symbols)}, received {action_arr.shape}"
+                )
+            action_arr = np.clip(action_arr, 0.0, None)
+            total = action_arr.sum()
+            if total <= 0:
+                action_arr = np.full_like(action_arr, 1.0 / len(self.symbols))
+            else:
+                action_arr /= total
+            target_weights = apply_tau_limit(self.prev_weights, action_arr, self._tau)
+            price_map = {symbol: float(price) for symbol, price in zip(self.symbols, current_prices)}
+            holdings_map, _, _ = integerize_allocations(
+                {sym: w for sym, w in zip(self.symbols, target_weights)},
+                price_map,
+                nav=max(nav_before, 1e-8),
+                symbols=self.symbols,
+                lot_size=1,
+            )
+            validate_holdings_payload(self.symbols, holdings_map)
+            desired_holdings = np.array([int(holdings_map[sym]) for sym in self.symbols], dtype=np.int64)
+            trade_units = desired_holdings - self.holdings
+        else:
+            action_arr = np.asarray(action, dtype=np.int64)
+            if action_arr.ndim == 0:
+                action_arr = np.array([action_arr], dtype=np.int64)
+            if action_arr.shape[0] != len(self.symbols):
+                raise ValueError(
+                    f"Expected action dimension {len(self.symbols)}, received {action_arr.shape}"
+                )
+            trade_units = action_arr - self._action_n
 
         sell_notionals: list[float] = []
         sell_prices: list[float] = []
@@ -194,6 +254,7 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
             sell_prices.append(price)
 
         buy_notionals: list[float] = []
+        buy_prices: list[float] = []
 
         # Execute buys (positive trade units) using remaining cash
         for idx, units in enumerate(trade_units):
@@ -210,34 +271,41 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
             self.cash -= cost
             self.holdings[idx] += qty
             buy_notionals.append(cost)
+            buy_prices.append(price)
 
-        commission_cost = 0.0
-        slippage_cost = 0.0
-        if sell_notionals:
-            notionals_arr = np.asarray(sell_notionals, dtype=np.float64)
-            prices_arr = np.asarray(sell_prices, dtype=np.float64)
-            commission_cost = compute_commission(notionals_arr, self._friction)
-            slippage_cost = compute_slippage(notionals_arr, prices_arr, self._friction)
-            self.cash -= commission_cost + slippage_cost
-        else:
-            notionals_arr = np.asarray([], dtype=np.float64)
+        commission_cost, slippage_cost, trade_notional_total = evaluate_transaction_costs(
+            buy_notionals=buy_notionals,
+            buy_prices=buy_prices,
+            sell_notionals=sell_notionals,
+            sell_prices=sell_prices,
+            friction=self._friction,
+        )
+        total_cost = commission_cost + slippage_cost
 
-        total_sell_value = float(notionals_arr.sum()) if notionals_arr.size else 0.0
-        total_buy_value = float(sum(buy_notionals)) if buy_notionals else 0.0
-        trade_notional_total = total_sell_value + total_buy_value
+        cash_pre_cost = float(self.cash)
 
         self.steps_elapsed += 1
         self.current_idx = min(self.steps_elapsed, self.num_prices - 1)
         next_prices = self.price_matrix[self.current_idx]
         prev_portfolio_value = self.asset_history[-1]
-        portfolio_value = self.cash + float(np.dot(self.holdings, next_prices))
+        holdings_value = float(np.dot(self.holdings, next_prices))
+        gross_portfolio_value = cash_pre_cost + holdings_value
+        self.cash = cash_pre_cost - total_cost
+        portfolio_value = self.cash + holdings_value
 
         self.peak_value = max(self.peak_value, portfolio_value)
-        denom = max(prev_portfolio_value, 1e-8)
-        total_cost = commission_cost + slippage_cost
-        self.last_turnover = trade_notional_total / denom if denom > 0 else 0.0
-        self.last_nav_return = (portfolio_value - prev_portfolio_value) / denom if denom > 0 else 0.0
-        self.last_cost_ratio = total_cost / denom if denom > 0 else 0.0
+        gross_denom = max(gross_portfolio_value, 1e-8)
+        prev_denom = max(prev_portfolio_value, 1e-8)
+        self.last_turnover = trade_notional_total / gross_denom if gross_denom > 0 else 0.0
+        if prev_portfolio_value > 0:
+            nav_return = portfolio_value / prev_portfolio_value - 1.0
+            log_return = np.log(max(portfolio_value, 1e-8) / max(prev_portfolio_value, 1e-8))
+        else:
+            nav_return = 0.0
+            log_return = 0.0
+        self.last_nav_return = nav_return
+        self.last_log_return = log_return
+        self.last_cost_ratio = total_cost / gross_denom if gross_denom > 0 else 0.0
         if self.peak_value > 0:
             self.last_drawdown = (self.peak_value - portfolio_value) / self.peak_value
         else:
@@ -248,6 +316,17 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
         self.last_returns = returns_vec
         self.last_commission_cost = commission_cost
         self.last_slippage_cost = slippage_cost
+        if gross_portfolio_value > 0:
+            weights_exec = (self.holdings * next_prices) / gross_portfolio_value
+            cash_fraction = self.cash / gross_portfolio_value
+        else:
+            weights_exec = np.zeros(len(self.symbols), dtype=np.float64)
+            cash_fraction = 0.0
+        self.last_weights = weights_exec
+        self.last_cash_fraction = cash_fraction
+        self.prev_weights = weights_exec
+        self.prev_cash_fraction = cash_fraction
+        self.last_gross_value = gross_portfolio_value
 
         self.asset_history.append(portfolio_value)
         self.date_history.append(self.dates[self.current_idx])
@@ -255,7 +334,7 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
         if self.steps_elapsed >= self.max_trade_steps:
             self.terminal = True
 
-        reward_unscaled = (portfolio_value - self.initial_cash) if self.terminal else 0.0
+        reward_unscaled = log_return - self._lambda_turnover * self.last_turnover
         reward = float(reward_unscaled * self.reward_scaling)
 
         observation = self._observation()
@@ -408,12 +487,40 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
         self.peak_value = float(portfolio_value)
         self.last_turnover = 0.0
         self.last_nav_return = 0.0
+        self.last_log_return = 0.0
         self.last_drawdown = 0.0
         self.last_commission_cost = 0.0
         self.last_slippage_cost = 0.0
         self.last_cost_ratio = 0.0
         self.last_returns = np.zeros(len(self.symbols), dtype=np.float64)
+        if portfolio_value > 0:
+            weights = (self.holdings * prices) / portfolio_value
+            cash_fraction = self.cash / portfolio_value
+        else:
+            weights = np.full(len(self.symbols), 1.0 / len(self.symbols), dtype=np.float64)
+            cash_fraction = 1.0
+        self.last_weights = weights
+        self.last_cash_fraction = cash_fraction
+        self.prev_weights = weights.copy()
+        self.prev_cash_fraction = cash_fraction
+        self.last_gross_value = float(portfolio_value)
         self.initial_cash = float(portfolio_value)
+
+    def resolve_portfolio_start_index(self, state: Mapping[str, Any]) -> int:
+        """Public wrapper for determining the start index for a portfolio override."""
+
+        return self._resolve_start_index(state)
+
+    def price_map(self, index: Optional[int] = None) -> Dict[str, float]:
+        """Return a symbol->price mapping at the requested episode index."""
+
+        idx = self.current_idx if index is None else int(index)
+        if idx < 0 or idx >= self.num_prices:
+            raise ValueError(f"Index {idx} outside valid price history range (0, {self.num_prices - 1}).")
+        return {
+            symbol: float(self.price_matrix[idx, slot])
+            for slot, symbol in enumerate(self.symbols)
+        }
 
     def _info(self, *, reward_unscaled: float) -> Dict[str, Any]:
         prices = self.price_matrix[self.current_idx]
@@ -426,6 +533,7 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
             "portfolio_value": float(portfolio_value),
             "nav": float(portfolio_value),
             "nav_return": float(self.last_nav_return),
+            "log_return": float(self.last_log_return),
             "turnover": float(self.last_turnover),
             "drawdown": float(self.last_drawdown),
             "commission_cost": float(self.last_commission_cost),
@@ -433,4 +541,7 @@ class MultiStockTradingEnv(gym.Env[NDArray[np.float32], NDArray[np.int64]]):
             "cost_ratio": float(self.last_cost_ratio),
             "reward_unscaled": float(reward_unscaled),
             "date": self.dates[self.current_idx],
+            "weights": self.last_weights.astype(np.float32, copy=False),
+            "cash_fraction": float(self.last_cash_fraction),
+            "gross_value": float(self.last_gross_value),
         }

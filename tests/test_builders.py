@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from src.utils.builders import (
     build_agent_spec,
@@ -17,7 +18,11 @@ def test_environment_builder_extracts_settings():
     config = load_config("configs/base.yaml")
     env_cfg = build_environment_config(config)
     assert env_cfg.initial_cash == 10_000_000_000.0
-    assert env_cfg.friction.commission_rate == 0.00025
+    assert env_cfg.friction.commission_rate == 0.005
+    assert env_cfg.friction.slippage_bps == 50.0
+    assert env_cfg.action_mode == "weights"
+    assert env_cfg.tau == pytest.approx(0.1)
+    assert env_cfg.lambda_turnover == pytest.approx(0.02)
 
     frame = pd.DataFrame(
         {
