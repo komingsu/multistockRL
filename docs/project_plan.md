@@ -1,66 +1,60 @@
 # Project Plan
 
 ## Goal
-Build a multi-asset reinforcement learning trader that operates on daily bars, models transaction costs and slippage, and can be iterated quickly for performance tuning.
+Build a weight‑based, multi‑asset trader on daily bars with realistic frictions (commission + slippage), τ‑limited allocation changes, integerized execution, and deterministic evaluation with patience/rollback.
 
 ## Scope and Assumptions
-- Single developer workload, no external services beyond local files.
-- Data lives under `data/proc/` and already includes technical indicators.
-- Further preprocessing, model swaps, additional indicators, ensemble logic, and training strategies must remain easy to plug in.
-- Logging flows through `src/loggers.ExperimentLogger` into run-scoped directories (CSV + YAML snapshots).
+- Single‑developer workflow; local files only.
+- Processed data under `data/` with indicators available; additional transforms remain plug‑in.
+- All behavior is config‑driven; logging flows through `src/loggers/experiment.py` into run‑scoped `artifacts/`.
 
 ## Guiding Principles
-1. Keep modules short and readable; prefer pure functions where possible.
-2. Hide experiment hyperparameters inside versioned config files.
-3. Encapsulate brokerage frictions (fees, slippage, position limits) inside the environment layer.
-4. Favor deterministic preprocessing so experiments are reproducible.
-5. Provide lightweight hooks for evaluation and reporting without full-scale dashboards.
+1. Action mapping in env; agents remain algorithmic plug‑ins.
+2. Deterministic evaluation; improvements only recorded on new validation peaks.
+3. Reproducibility: versioned configs, VecNormalize stats saved/loaded, CPU default.
+4. Simple, testable modules; focused unit/property tests for τ limiter, costs, alignment.
 
-## Workstreams
-1. **Data Pipeline**
-   - Validate column schema, missing values, and symbol coverage.
-   - Implement preprocessing transforms (normalization, feature windows, masks) with reusable routines.
-2. **Environment**
-   - Rewrite gym environment to handle vectorized multi-stock positions, order sizing, and friction models.
-   - Add scenario randomization hooks (fee shocks, slippage sampling, trading halts).
-3. **Agent & Policy**
-   - Implement modular policy factory that can return different SB3 (and future custom) agents.
-   - Support curriculum components (warm start, pretraining, offline rollouts) as optional steps.
-4. **Training Orchestrator**
-   - CLI script that loads data, rebuilds/resumes envs, trains agents, evaluates on holdout periods, and saves artifacts.
-   - Emit structured .log files with end-of-run summaries, metrics.csv telemetry, and torch checkpoints bundling config + model state for resumability.
-5. **Evaluation & Analytics**
-   - Generate plots/tables offline (Matplotlib, Pandas) and save to `reports/`.
-   - Include Monte-Carlo stress tests and bootstrapped performance intervals.
-6. **Experiment Management**
-   - Store configs under `configs/` (YAML/JSON).
-   - Provide helper to stamp run metadata and log file paths.
+## Workstreams (Status)
+1. Data Pipeline — done (schema, loader, windowing, preprocessing docs)
+2. Environment — done (weights mode + τ limiter + integerization; unified costs; turnover‑aware log‑return reward; D→D+1 alignment)
+3. Training Orchestrator — done (project epochs; patience‑gated eval; rollback/early‑stop; checkpoints + VecNormalize)
+4. Evaluation & Analytics — in progress (deterministic rollouts, traces/plots; add PSR/DSR + bootstrap CIs)
+5. Baselines — in progress (PPO baseline done; add SAC/TD3/TQC/RecurrentPPO via `--algo`; default wrappers: VecNormalize + TimeFeatureWrapper)
+6. Risk/Projection — next (simplex/ℓ1‑ball projection with cash asset; leverage bounds)
+7. Selection/Validation — next (Purged K‑Fold + embargo; CPCV later)
+8. Averaging/Ensembles — next (EMA/SWA for inference; snapshot ensembles)
 
-## Near-Term Milestones
-- [x] **M0** (2025-10-03): Confirm data schema and friction parameters (fees, slippage, position limits).
-- [x] **M1**: Deliver rewritten `MultiStockTradingEnv` with deterministic step logic, friction hooks scaffolded, and unit coverage.
-- [ ] **M2**: Produce baseline PPO training run end-to-end with saved checkpoints and evaluation report.
-- [ ] **M3**: Add hyperparameter sweep harness and ensemble evaluation utilities.
-- [ ] **M4**: Document tuning heuristics and failure recovery playbook.
+## Milestones
+- [x] M0 (2025‑10‑03): Confirm data schema and friction parameters.
+- [x] M1: Weight‑based env with τ limiter, integerization, log‑return – λ·turnover reward; unit tests.
+- [x] M2: Baseline PPO end‑to‑end with checkpoints, deterministic eval, validation‑peak gating, and rollback.
+- [ ] M3: Multi‑algo baseline switch (SAC/TD3/TQC/RecurrentPPO) behind config/CLI; enable TimeFeatureWrapper by default.
+- [ ] M4: Selection with Purged K‑Fold + embargo; add PSR/DSR + block/bootstrap CIs to reports.
+- [ ] M5: EMA “slow policy” for inference and optional SWA over final checkpoints.
+- [ ] M6: Simplex/ℓ1‑ball projection (cash asset, leverage cap) + tests.
+- [ ] M7: Hyperparameter sweep harness and ensemble utilities.
 
 ## Deliverables
-- Modular source tree under `src/` with unit-testable components.
-- Config files for at least PPO, SAC, and a placeholder custom policy.
-- Automated scripts: `train.py`, `evaluate.py`, `make_dataset.py`.
-- Documentation set: architecture overview, checklist, agent diary.
-- Logging conventions with sample metric exports under `artifacts/`.
+- Modular source tree under `src/` with unit‑testable components.
+- Configs for PPO (done); SAC/TD3/TQC/RPPO (pending), with VecNormalize + TimeFeatureWrapper defaults.
+- Scripts: `train.py`, `evaluate.py`, `report.py` (done).
+- Docs: architecture, environment API, plan/checklist, agent diary (ongoing).
+- Artifacts: metrics/logs/checkpoints, traces, and valuation plots for new validation peaks.
 
 ## Risks & Mitigations
-- **Data drift or gaps**: include schema checks and timeline assertions pre-training.
-- **Instability from slippage modeling**: keep random seeds logged; add clamping on position deltas.
-- **Experiment debt**: update agent diary after each session; prune stale configs.
-- **Runtime failures**: wrap training loop with try/except that writes errors to log and safe checkpoints.
+- Data drift/gaps → schema checks and split assertions pre‑training.
+- Cost/τ instability → property tests for τ limiter and projection invariants.
+- Eval leakage/selection bias → Purged K‑Fold with embargo; CPCV later.
+- Reproducibility → enforce VecNormalize parity at eval/inference.
 
-## Next Actions
-1. Extend reporting to compute additional analytics (Sharpe, volatility, downside risk) on evaluation outputs.
-2. Capture git commit metadata and runtime context in each run directory.
-3. Prepare hyperparameter sweep utilities for PPO/SAC and document recommended search spaces.
-4. Implement optional scenario injectors (turbulence halts, price shocks) leveraging the new stress hooks.
+## Next Actions (Sequenced)
+1. P0: Projection layer (simplex + ℓ1‑ball w/ leverage); unit/property tests; integrate before τ.
+2. P1: Baseline switch: add SAC/TD3/TQC/RPPO via `agents.factory` and config `--algo`.
+3. P2: Metrics: implement PSR/DSR + block/bootstrap CIs; persist into `evaluation` outputs.
+4. P2: Splits: Purged K‑Fold + embargo utilities; wire into model selection.
+5. P3: EMA/SWA toggles; inference uses EMA by default; document.
+6. P4: Feature set & vol targeting; audit PIT alignment and survivorship.
+
 
 
 
