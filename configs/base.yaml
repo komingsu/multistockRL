@@ -107,10 +107,13 @@ environment:
   reward_scaling: 1.0
   max_steps: null
   risk_free_rate: 0.0
+  action_mode: weights
+  tau: 0.1
+  lambda_turnover: 0.02
   friction:
-    commission_rate: 0.00025
+    commission_rate: 0.005
     min_commission: 0.0
-    slippage_bps: 1.0
+    slippage_bps: 50.0
   stress:
     enabled: false
     commission_multiplier: 1.0

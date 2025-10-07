@@ -1,0 +1,149 @@
+data:
+  path: data/proc/daily_with_indicators.csv
+  date_column: date
+  symbol_column: symbol
+  categorical_columns:
+    industry:
+      missing_token: UNKNOWN_INDUSTRY
+    market:
+      missing_token: UNKNOWN_MARKET
+    symbol:
+      missing_token: UNKNOWN_SYMBOL
+  feature_columns:
+    price:
+    - open
+    - high
+    - low
+    - close
+    - volume
+    - value
+    - market_cap
+    - change
+    - change_rate
+    - range_pct
+    - gap_pct
+    flows:
+    - prsn_buy_val_ratio
+    - prsn_sell_val_ratio
+    - prsn_net_val_ratio
+    - prsn_buy_vol_ratio
+    - prsn_sell_vol_ratio
+    - prsn_net_vol_ratio
+    - frgn_buy_val_ratio
+    - frgn_sell_val_ratio
+    - frgn_net_val_ratio
+    - frgn_buy_vol_ratio
+    - frgn_sell_vol_ratio
+    - frgn_net_val_ratio
+    - orgn_buy_val_ratio
+    - orgn_sell_val_ratio
+    - orgn_net_val_ratio
+    - orgn_buy_vol_ratio
+    - orgn_sell_vol_ratio
+    - orgn_net_val_ratio
+    technical:
+    - ma_5
+    - ma_10
+    - ma_20
+    - dist_ma5
+    - dist_ma10
+    - dist_ma20
+    - ma10_slope
+    - ma20_slope
+    - atr_5
+    - atr_14
+    - rv_10
+    - rv_20
+  target_column: close
+  target_transform: log_return
+splits:
+  train:
+    start: 2020-09-28
+    end: 2024-12-31
+  validation:
+    start: 2025-01-02
+    end: 2025-06-30
+  test:
+    start: 2025-07-01
+    end: 2025-09-26
+window:
+  size: 60
+  horizon: 1
+  step: 1
+  normalization:
+    method: zscore
+    scope: window
+  include_future_targets: false
+loader:
+  drop_na_targets: true
+  enforce_sort: true
+  float_dtype: float32
+  cache:
+    enabled: false
+environment:
+  initial_cash: 100000000.0
+  max_leverage: 1.0
+  reward_scaling: 1.0
+  max_steps: null
+  risk_free_rate: 0.0
+  action_mode: weights
+  tau: 0.1
+  lambda_turnover: 0.02
+  friction:
+    commission_rate: 0.005
+    min_commission: 0.0
+    slippage_bps: 50.0
+agents:
+  default: PPO
+  policies:
+    PPO:
+      policy: MlpPolicy
+      learning_rate: 0.0003
+      batch_size: 512
+      n_steps: 4096
+      n_epochs: 1
+      clip_range: 0.2
+logging:
+  run_dir: artifacts/runs
+  metrics:
+  - train_reward
+  - valid_reward
+  - project_epoch
+  - total_env_steps
+  - episodes_completed
+  - updates_applied
+  - nav
+  - turnover
+  - drawdown
+  flush_interval: 100
+preprocessing:
+  lag_features:
+  - column: close
+    lags:
+    - 1
+    - 5
+    - 10
+    transform: log_return
+    feature_group: price
+  - column: volume
+    lags:
+    - 1
+    transform: pct_change
+    feature_group: liquidity
+  masks:
+    trading_gap: true
+training:
+  total_epochs: 100
+  project_epoch_unit: steps
+  project_epoch_value: 4096
+  log_interval_project_epochs: 1
+  eval_interval_project_epochs: 1
+  checkpoint_interval_project_epochs: 1
+  eval_episodes: 1
+  vecnormalize:
+    enabled: true
+    norm_obs: true
+    norm_reward: false
+    clip_obs: 10.0
+    clip_reward: 10.0
+    gamma: 0.99

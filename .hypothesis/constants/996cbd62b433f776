@@ -1,0 +1,4 @@
+# file: /mnt/c/Users/rh987/OneDrive/document/GitHub/multistockRL/src/env/rewards.py
+# hypothesis_version: 6.140.3
+
+[0.05, 0.1, 0.5, 1.0, 'RewardConfig', 'RewardContext', 'compute_reward']

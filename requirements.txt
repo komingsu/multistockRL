@@ -47,3 +47,4 @@ jupyter
 ipykernel
 # --- Testing ---
 pytest
+hypothesis

@@ -1,0 +1,4 @@
+# file: /mnt/c/Users/rh987/OneDrive/document/GitHub/multistockRL/src/pipelines/normalization.py
+# hypothesis_version: 6.140.3
+
+[1e-08, 0.99, 10.0, 'clip_obs', 'clip_reward', 'enabled', 'epsilon', 'gamma', 'norm_obs', 'norm_reward', 'vecnormalize.pkl', 'vecnormalize_enabled']

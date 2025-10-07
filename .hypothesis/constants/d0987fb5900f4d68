@@ -1,0 +1,4 @@
+# file: /mnt/c/Users/rh987/OneDrive/document/GitHub/multistockRL/src/pipelines/evaluation.py
+# hypothesis_version: 6.140.3
+
+[0.0, 0.3, 4.5, 150, '#1f77b4', '#d62728', '#ffe8e8', 'Date', 'NAV', 'Peak NAV', 'Portfolio Value', 'allocations', 'avg_turnover', 'best', 'boxstyle', 'cash', 'cash_end', 'cash_fraction', 'checkpoint_timesteps', 'date', 'drawdown', 'ec', 'enabled', 'episode', 'episodes', 'fc', 'final_cash', 'final_nav', 'holdings', 'initial_nav', 'integerize', 'isoformat', 'log_return', 'max_drawdown', 'mean_final_nav', 'mean_final_reward', 'mean_max_drawdown', 'mean_total_return', 'mean_turnover', 'nav', 'nav_return', 'o', 'offset points', 'portfolio_value', 'position_json', 'prices', 'round,pad=0.3', 'set_portfolio_state', 'std_final_nav', 'std_final_reward', 'stress', 'target_weights', 'total_return', 'training_settings', 'turnover', 'unwrapped', 'utf-8', 'validation', 'valuation_plots', 'vecnormalize', 'w', 'weights', 'worst_total_return']
