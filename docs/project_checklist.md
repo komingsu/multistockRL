@@ -9,6 +9,14 @@
 - [x] Set up logging helper and default `.log` destination folder.
 - [x] Define lightweight logging utilities for metrics + experiment runs aligned with config system.
 
+## Environment Hardening (P0)
+- [x] Switch to weight‑based actions with τ limiter and integerized execution.
+- [x] Unified one‑way commission + slippage costs on both legs.
+- [x] Reward: per‑step `log(V_t/V_{t-1}) − λ·turnover` with turnover from post‑return gross NAV.
+- [x] Deterministic D→D+1 alignment; forbid lookahead; tests added.
+- [ ] Projection: logits→simplex (cash asset) and optional ℓ1‑ball with `max_leverage`.
+- [ ] Property tests: projection invariants (sum‑to‑1/leverage bound) and 100+ randomized τ scenarios.
+
 ## Data
 - [x] Document schema for `data/proc/*.csv`.
 - [x] Implement loader with schema validation and missing-data handling.
@@ -28,12 +36,14 @@
 - [x] Apply sell-side-only commission and integrate slippage into `MultiStockTradingEnv`.
 - [x] Emit NAV/turnover/drawdown diagnostics via `info` for richer logging.
 - [x] Document environment API signatures and current limitations.
+ - [x] Add `action_mode: weights|shares`, τ, `lambda_turnover`, and leverage knobs.
 
 ## Agents
 - [x] Build agent factory supporting PPO/SAC/DDPG/A2C/TD3 instantiation.
 - [ ] Define vetted default policy kwargs and action-noise settings for off-policy agents.
 - [ ] Implement custom callbacks for risk monitoring beyond metrics logging.
 - [x] Provide baseline training config for PPO with validation split.
+ - [ ] Add `--algo` switch in training CLI and configs for SAC/TD3/TQC/RecurrentPPO.
 
 ## Training Pipeline
 - [x] Create CLI entrypoint for training with config argument.
@@ -41,6 +51,9 @@
 - [x] Log enriched metrics (NAV, turnover, drawdown) alongside reward each project epoch.
 - [x] Store best model snapshot per run.
 - [x] Introduce project-epoch cadence for logging, evaluation, and checkpointing.
+- [x] Add patience-based rollback and early stopping.
+- [x] Enforce VecNormalize parity on evaluation/inference; save stats next to checkpoints.
+ - [ ] Apply TimeFeatureWrapper to observations (episode progress) where valid.
 
 ## Evaluation
 - [x] Emit per-episode CSV traces (validation + final eval) with holdings/cash/value/deltas.
@@ -48,6 +61,8 @@
 - [ ] Generate performance report (returns, sharpe, drawdown, turnover).
 - [x] Add stress testing hooks (commission/slippage multipliers).
 - [x] Produce summary CSV/JSON artifacts for offline analysis.
+ - [ ] Add PSR/DSR and block/bootstrap CIs to evaluation summary.
+ - [ ] Selection: implement Purged K‑Fold + embargo utilities; consider CPCV.
 
 ## Experiment Management
 - [x] Standardize run directory structure under `artifacts/`.
@@ -57,3 +72,7 @@
 - [ ] Review checklist weekly and reprioritize.
 - [ ] Fill project milestones and keep them current as deliverables ship.
 
+## Robustness & Deployment
+- [ ] EMA (slow policy) for inference; toggle in config.
+- [ ] Optional SWA over last N checkpoints; A/B compare.
+- [ ] Snapshot/policy ensembles across seeds/epochs; re‑project to simplex.
