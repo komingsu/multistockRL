@@ -142,10 +142,13 @@ def test_run_training_pipeline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, 
     assert "cash" in trace_df.columns
     assert "portfolio_value_change" in trace_df.columns
     assert "nav_return" in trace_df.columns
+    assert "log_return" in trace_df.columns
     assert "turnover" in trace_df.columns
     assert "drawdown" in trace_df.columns
+    assert "cash_fraction" in trace_df.columns
     for symbol in sorted(data["symbol"].unique()):
         assert symbol in trace_df.columns
+        assert f"weight_{symbol}" in trace_df.columns
 
     final_trace_dir = result.run_directory / "final_eval_traces"
     assert final_trace_dir.exists()
